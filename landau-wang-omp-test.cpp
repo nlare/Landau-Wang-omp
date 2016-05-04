@@ -697,6 +697,7 @@ int main(int argc, char *argv[])  {
 
         for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
             if((i!=2*E_max[pp_i]-1) && (massive[pp_i].hist[i] != 0))    {
+            // if(((i!=2*E_max[pp_i]-1) && i%2 == 0) || i == 0)    {
                 // test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[pp_i].g[i] << "\n";
                 test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[pp_i].g[i] << "\n";
                 // std::cout << "massive.g[" << i << "]=" << massive[pp_i].g[i] << std::endl;
@@ -758,7 +759,22 @@ int main(int argc, char *argv[])  {
 
         int div_averaging[top_b];
 
-        for(int i = 0; i < top_b; i++)  {
+        // for(int i = 0; i < overlap_interval_begin+4; i++) {
+        //     div_averaging[i] = 1;
+        //     // g_averaged[i] -= 1;
+        // }
+
+        // for(int i = overlap_interval_begin+4; i < overlap_interval_end; i++) {
+        //     div_averaging[i] = 2;
+        //     // g_averaged[i] -= 1;
+        // }
+
+        // for(int i = overlap_interval_end; i < top_b; i++) {
+        //     div_averaging[i] = 1;
+        //     // g_averaged[i] -= 1;
+        // }
+
+        for(int i = 0; i <= top_b; i++)  {
            div_averaging[i] = PP_I;
         }
 
@@ -768,12 +784,14 @@ int main(int argc, char *argv[])  {
         }
 
         // std::cout << "overlap_interval_begin = " << overlap_interval_begin << "; overlap_interval_end = " << overlap_interval_end << std::endl;
+        #pragma omp flush(massive)
 
         for(int i = 0; i < top_b; i++)  {
             std::cout << "------------------------------------------------------------------" << std::endl;
             max_in_pp_i = 0;   
-            for(int pp_i = 0; pp_i < PP_I; pp_i++)  {
-                 if(massive[pp_i].hist[i]!=0)   
+            for(int rank = 0; rank < PP_I; rank++)  {
+                 // if(massive[pp_i].hist[i]!=0) 
+                 if(i%2 == 0 || i == 0)  
                  {
                     // -------------- CHOOSE MAX G[E] IN ALL REPLICAS -----------------
                     // if(massive[pp_i].g[i] > max_in_pp_i)   {    
@@ -784,29 +802,70 @@ int main(int argc, char *argv[])  {
     
                     // -------------- AVERAGING ALL REPLICAS G[E] -----------------
 
-                    hist_averaged[i] = hist_averaged[i] + massive[pp_i].hist[i];
+                    hist_averaged[i] = hist_averaged[i] + massive[rank].hist[i];
                     // std::cout << "----------------------------------------------" << std::endl;
 
                     // hist_averaged[i] = 1.0;
 
                     // g_averaged[i] += massive[pp_i].g[i];
-                    g_averaged[i] += massive[pp_i].g[i];
+
+                    /*
+                     * Only for L = 8
+                     * 
+                     */
+
+                    if(rank == 0)   {
+
+                        if(i <= overlap_interval_begin+2)    {
+
+                            g_averaged[i] = massive[rank].g[i];
+
+                        }
+
+                        if(i > overlap_interval_begin+2 && i < overlap_interval_end)    {
+
+                            g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                        }
+
+                    }
+
+                    if(rank == 1)   {
+
+                        if(i >= overlap_interval_end)    {
+
+                            g_averaged[i] = massive[rank].g[i]; 
+
+                        }
+
+                        if(i > overlap_interval_begin+2 && i < overlap_interval_end)    {
+
+                            g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                        }
+
+                    }
+
+                    // g_averaged[i] = g_averaged[i] + massive[rank].g[i];
 
 
                     // -------------- AVERAGING ALL REPLICAS G[E] ----------------
                     // if(f == 2.7182818284)    
 
                     if(i > overlap_interval_begin+2 && i < overlap_interval_end)  {
+
+
                         // ...
                     }   else    {
 
                         g_averaged[i] -= 1;
-                        div_averaging[i] -= 1;
+                        div_averaging[i] = 1;
 
                     }
                 }
-                std::cout << "pp_i = " << pp_i << ": i: " << i << ": H_SUM=" << hist_averaged[i] << ", H[" << pp_i << "]=" << (double) massive[pp_i].hist[i] \
-                              << ", G_SUM=" << g_averaged[i] << ", G[" << pp_i << "]=" << massive[pp_i].g[i] << std::endl;
+
+                std::cout << "pp_i = " << rank << ": i: " << i << ": H_SUM=" << hist_averaged[i] << ", H[" << rank << "]=" << (double) massive[rank].hist[i] \
+                              << ", G_SUM=" << g_averaged[i] << ", G[" << rank << "]=" << massive[rank].g[i] << std::endl;
             }   
         }
 
@@ -821,10 +880,10 @@ int main(int argc, char *argv[])  {
         // }
 
         for(int i = 0; i < top_b; i++)     {
-            if(hist_averaged[i]!=0)  {
+            // if(hist_averaged[i]!=0)  {
+            if(i%2 == 0 || i == 0)  {
                 // std::cout << "Check1: div = " << div_averaging[i] << std::endl;
                 count++;
-                // hist_averaged[i]/=div_averaging[i];
                 g_averaged[i]/=div_averaging[i];
                 hist_averaged[i]/=div_averaging[i];
                 std::cout << "i:" << i << " :: G0[" << i << "]=" << massive[0].g[i] << " :: G1[" << i << "]=" << massive[1].g[i] <<  " :: G_AV[" << i << "]=" << g_averaged[i] << " :: HIST_AV[" << i << "]=" << hist_averaged[i] << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;
@@ -850,7 +909,8 @@ int main(int argc, char *argv[])  {
         test_g_f.open(ss.str().c_str());
 
         for(int i = 0; i < top_b; i++)  {
-            if((i!=2*top_b-1) && (hist_averaged[i] != 0))    {
+            // if((i!=2*top_b-1) && (hist_averaged[i] != 0))    {
+            if(((i!=2*top_b-1) && (i%2 == 0)) || i == 0)    {
                 test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << g_averaged[i] << "\n";
                 // std::cout << "massive.g[" << i << "]=" << massive[pp_i].g[i] << std::endl;
             }
@@ -898,7 +958,7 @@ int main(int argc, char *argv[])  {
                 massive[rank].hist[i] = 0;
                 hist_averaged[i] = 0;
 
-                if(i%2==0) massive[rank].hist[i] = 1.0;
+                // if(i%2==0) massive[rank].hist[i] = 1.0;
     
             }
         }
@@ -906,8 +966,11 @@ int main(int argc, char *argv[])  {
         }
 
         #pragma omp barrier
-
-        // massive[0].g[0] = 0;
+        
+        if(omp_get_thread_num() == 0)   {
+            massive[0].g[0] = 0.0;
+            g_averaged[0] = 0.0;
+        }
 
         f = pow(f, 0.5);    // Изменяем множитель
 
