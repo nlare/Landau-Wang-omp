@@ -61,6 +61,9 @@ int main(int argc, char *argv[])  {
     std::cout << "adding g_averaged massive\n";
     double g_averaged[4*L*L];
 
+    std::cout << "adding g_normalized massive\n";
+    double g_normalized[4*L*L];
+
     std::cout << "adding hist_averaged massive\n";
     double  hist_averaged[4*top_b];
 
@@ -858,7 +861,7 @@ int main(int argc, char *argv[])  {
                         // ...
                     }   else    {
 
-                        g_averaged[i] -= 1;
+                        // g_averaged[i] -= 1;
                         div_averaging[i] = 1;
 
                     }
@@ -882,11 +885,12 @@ int main(int argc, char *argv[])  {
         for(int i = 0; i < top_b; i++)     {
             // if(hist_averaged[i]!=0)  {
             if(i%2 == 0 || i == 0)  {
-                // std::cout << "Check1: div = " << div_averaging[i] << std::endl;
+
                 count++;
                 g_averaged[i]/=div_averaging[i];
                 hist_averaged[i]/=div_averaging[i];
                 std::cout << "i:" << i << " :: G0[" << i << "]=" << massive[0].g[i] << " :: G1[" << i << "]=" << massive[1].g[i] <<  " :: G_AV[" << i << "]=" << g_averaged[i] << " :: HIST_AV[" << i << "]=" << hist_averaged[i] << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;
+
             }
         }
 
@@ -967,30 +971,43 @@ int main(int argc, char *argv[])  {
 
         #pragma omp barrier
         
-        if(omp_get_thread_num() == 0)   {
-            massive[0].g[0] = 0.0;
-            g_averaged[0] = 0.0;
-        }
+        // if(omp_get_thread_num() == 0)   {
+            // massive[0].g[0] = 0.0;
+            // g_averaged[0] = 0.0;
+        // }
+        #pragma omp flush(massive)
 
         f = pow(f, 0.5);    // Изменяем множитель
 
     }   // while (f > f_min) cycle 
 
     std::cout << "Ending estimation of G." << std::endl;
-    std::cout << "Begin Averaging of G:" << std::endl;
+    std::cout << "Begin Normalising of G:" << std::endl;
 
     // std::cout << "Thread #" << omp_get_thread_num() << std::endl;
 
     // #pragma omp flush(massive)
 
-    min_in_ge = g_averaged[L*L]; // index may be anything (not L*L)
+    min_in_ge = g_averaged[4]; // index may be anything (not L*L)
 
     for(int i = 0; i < top_b; i++)  {
-        if(hist_averaged[i]!=0)  {
+        // if(hist_averaged[i]!=0)  {
+        if(i%2 == 0 && i >= 4)  {
             if(g_averaged[i] < min_in_ge)
             min_in_ge = g_averaged[i];
         }
     }
+
+    g_averaged[top_b] = min_in_ge;
+
+    if(PP_I == 2)    {
+
+        massive[0].g[top_b] = g_averaged[top_b];
+        massive[1].g[top_b] = g_averaged[top_b];
+
+    }
+
+    std::cout << "min_in_g[E] = " << min_in_ge << std::endl;
 
     // -------------- FOR READISTRIBUTED G[E] -----------------
     // for(int i = 0; i < top_b; i++)  {
@@ -1001,25 +1018,31 @@ int main(int argc, char *argv[])  {
 
     // -------------- FOR AVERAGED G[E] -----------------    
     // for(int i = 0; i < top_b; i++)  {
-    //     if(hist_averaged[i]!=0)
-    //     g_averaged[i] = g_averaged[i] - min_in_ge;
+        // if(hist_averaged[i]!=0)
     // }
     // -------------- FOR AVERAGED G[E] ----------------- 
 
-    for(int i = 0; i < top_b; i++)  {
-
+    for(int i = 0; i <= top_b; i++)  {
+        
+        if(i%2 == 0 && i > 2)   {
+            g_normalized[i] = g_averaged[i] - min_in_ge;
+        }
         // g_averaged[i]/=div_averaging[i];
         // if(g_averaged[i] > 1.0)
         if(L == 8)  {
-            if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0)
-            std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":" \
-                  << "\t" << massive[0].g[i] << "\t" << massive[1].g[i]\
-                  << "\t" << massive[0].g[i] - massive[0].g[4] << "\t"\
-                  << massive[1].g[i] - massive[1].g[20] << "\t" << g_averaged[i] - min_in_ge << std::endl;
+            // if(massive[0].hist[i]!=0 || massive[ 1].hist[i]!=0)
+            if(i%2 == 0 && i > 2)   {
+            std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":\t" << massive[0].g[i] << "\t" << massive[1].g[i] << "\t" \
+                      << g_normalized[i] << std::endl;
+                  // << "\t" << massive[0].g[i] - massive[0].g[4] << "\t" \
+                  // << massive[1].g[i] - massive[1].g[20] << "\t" \
+    
+            }
         }
 
         if(L == 16 && PP_I == 2)  {
-            if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0)
+            // if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0)
+            if(i%2 == 0 && i > 2)
             std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":" \
                   << "\t" << massive[0].g[i] << "\t" << massive[1].g[i]\
                   << "\t" << massive[0].g[i] - massive[0].g[4] << "\t"\
@@ -1027,7 +1050,8 @@ int main(int argc, char *argv[])  {
         }
 
         if(L == 16 && PP_I == 4)  {
-            if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0 || massive[2].hist[i]!=0 || massive[3].hist[i]!=0)
+            // if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0 || massive[2].hist[i]!=0 || massive[3].hist[i]!=0)
+            if(i%2 == 0 && i > 2)
             std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":" \
                   << "\t" << massive[0].g[i] << "\t" << massive[1].g[i]\
                   << "\t" << massive[2].g[i] << "\t" << massive[3].g[i]\
@@ -1036,18 +1060,15 @@ int main(int argc, char *argv[])  {
         }
 
         if(L > 16 && PP_I > 2)  {
-            if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0)
+            // if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0)
+            if(i%2 == 0 && i > 2)
             std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":" \
                   << "\t" << massive[0].g[i] << "\t" << massive[1].g[i]\
                   << "\t" << massive[0].g[i] - massive[0].g[4] << "\t"\
                   << massive[1].g[i] - massive[1].g[68] << "\t" << g_averaged[i] - min_in_ge << std::endl;
         }
 
-    }
-
-    g_averaged[2*L*L] = min_in_ge;   
-
-    std::cout << "min_in_g[E] = " << min_in_ge << std::endl;
+    }  
 
     std::cout << "End Averaging of G." << std::endl;
 
@@ -1097,14 +1118,14 @@ int main(int argc, char *argv[])  {
         lambdatemp = 0;
 
         for(int i = 0; i < top_b; i++)  {
-            if((i!=0) && i!=L*L-1 && (hist_averaged[i]!=0) && g_averaged[i]==g_averaged[i])    {
+            if((i!=0) && i%2 == 0 && (i!=L*L-1) && g_averaged[i]==g_averaged[i])    {
                 lambdatemp = g_averaged[i] - energy(i)/T;
                 if(lambdatemp > lambda) lambda = lambdatemp;
             }
         }
 
         for(int i = 0; i < top_b; i++) {
-            if((i!=1) && (i!=L*L-1) && (hist_averaged[i]!=0) && g_averaged[i]==g_averaged[i])    {
+            if((i!=1) && i%2 == 0 && (i!=L*L-1) && g_averaged[i]==g_averaged[i])    {
                 EE += energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
                 EE2 += energy(i)*energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
                 GE += exp(g_averaged[i]-energy(i)/T-lambda);
@@ -1123,8 +1144,8 @@ int main(int argc, char *argv[])  {
 
     for(int i = 0; i <= top_b; i++)  {
         if((i!=2*(L*L)-1) && i%2==0)    {
-            if((g_averaged[i]-min_in_ge) >= 0 && (g_averaged[i]-min_in_ge)==(g_averaged[i]-min_in_ge))
-            out_f_ds << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << g_averaged[i] - min_in_ge << "\t" << hist_averaged[i] << "\n";
+            if((g_normalized[i]) >= 0 && (g_normalized[i])==(g_normalized[i]))
+            out_f_ds << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << g_normalized[i] << "\n";
         }
     }
 
@@ -1235,8 +1256,7 @@ int main(int argc, char *argv[])  {
     //              "set ylabel \"H(i)\"\n" << \
     //              "plot \"" << filename_out_ds << "\" using 1:4 title \"landau-wang-" << L << "\" with lines lt rgb \"red\"";
 
-    // plot_f.close();  
-
+    // plot_f.close();
 
     ss.str("");
     ss << "graph/TermodinamicalStat_L=" << L << "_PP=" << PP_I;
