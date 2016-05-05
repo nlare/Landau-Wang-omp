@@ -23,7 +23,7 @@
 #define DEBUG
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 2
-#define L 8
+#define L 16
 
 // int neighbour_spins(int,int);
 
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])  {
     while(f > f_min)    {
 
         #pragma omp parallel for \
-        firstprivate(f,min_steps,skip,flat_threshold,h,E_min,E_max,top_b) \
+        firstprivate(f,min_steps,skip,flat_threshold,h,E_min,E_max,top_b,it_count_g) \
         private(b_new,b,ln_f)  \
         shared(system_of,massive,b_last,buffer,convergence_trigger,overlap_interval_begin,overlap_interval_end)
         for(int pp_i = 0; pp_i < PP_I; pp_i++)  {
@@ -682,27 +682,29 @@ int main(int argc, char *argv[])  {
 
         if(omp_get_thread_num() == 0)    {
 
-        for(int pp_i = 0; pp_i < PP_I; pp_i++)  {
+        for(int rank = 0; rank < PP_I; rank++)  {
 
         int first_not_null_g;
         double min_g_value;
         
-        it_count_g[pp_i]++;
+        it_count_g[rank]++;
+        std::cout << "it[" << rank << "]=" << it_count_g[rank] << std::endl;
 
         ss.str("");
         ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << pp_i;
         boost::filesystem::create_directories(ss.str().c_str());
 
-        ss << "/" << it_count_g[pp_i] << ".dat";
+        ss << "/" << it_count_g[rank] << ".dat";
         // std::cout << "write to " << ss.str() << std::endl;
 
         test_g_f.open(ss.str().c_str());
 
-        for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
-            if((i!=2*E_max[pp_i]-1) && (massive[pp_i].hist[i] != 0))    {
+        for(int i = E_min[rank]; i < E_max[rank]; i++)  {
+            // if((i!=2*E_max[pp_i]-1) && (massive[pp_i].hist[i] != 0))    {
+            if((i!=2*E_max[rank]-1) && (i%2 != 0))    {
             // if(((i!=2*E_max[pp_i]-1) && i%2 == 0) || i == 0)    {
                 // test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[pp_i].g[i] << "\n";
-                test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[pp_i].g[i] << "\n";
+                test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[rank].g[i] << "\n";
                 // std::cout << "massive.g[" << i << "]=" << massive[pp_i].g[i] << std::endl;
             }
         }
@@ -710,32 +712,32 @@ int main(int argc, char *argv[])  {
         test_g_f.close();
 
         ss.str("");
-        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << pp_i << "/temp";
+        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << rank << "/temp";
         boost::filesystem::create_directories(ss.str().c_str());
 
         ss.str("");
-        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-" << pp_i << "/temp/" << it_count_g[pp_i] << ".plot";
+        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-" << rank << "/temp/" << it_count_g[rank] << ".plot";
         graph_g_f.open(ss.str().c_str());
 
         ss.str("");
-        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << pp_i << "/graphs";
+        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << rank << "/graphs";
         boost::filesystem::create_directories(ss.str().c_str());
 
         ss.str("");
-        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-" << pp_i << "/" << it_count_g[pp_i] << ".dat";
+        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-" << rank << "/" << it_count_g[rank] << ".dat";
 
         graph_g_f << "#!/usr/bin/gnuplot -persist\n" << \
                  "set terminal jpeg font arial 12 size 800,600\n" << \
-                 "set output \"test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << pp_i << "/graphs/" << it_count_g[pp_i] << ".jpg\"\n" << \
+                 "set output \"test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << rank << "/graphs/" << it_count_g[rank] << ".jpg\"\n" << \
                  "set grid x y\n" << \
                  "set xtics 20 \n" << \
                  "set ytics 1000 \n" << \
                  "set mxtics 5 \n" << \
                  "set mytics 5  \n" << \
-                 "set xrange [" << E_min[pp_i] << ":" << E_max[pp_i] << "]\n" << \
-                 "set xlabel \"i [" << E_min[pp_i] << ":" << E_max[pp_i] << "]" << "\"\n" << \
+                 "set xrange [" << E_min[rank] << ":" << E_max[rank] << "]\n" << \
+                 "set xlabel \"i [" << E_min[rank] << ":" << E_max[rank] << "]" << "\"\n" << \
                  "set ylabel \"G(i)\"\n" << \
-                 "plot \"" << ss.str() << "\" using 1:3 title \"landau-wang-" << L << "-iteration-" << it_count_g[pp_i] << "\" with lines lt rgb \"red\"";
+                 "plot \"" << ss.str() << "\" using 1:3 title \"landau-wang-" << L << "-iteration-" << it_count_g[rank] << "\" with lines lt rgb \"red\"";
 
         graph_g_f.close();
 
@@ -825,7 +827,7 @@ int main(int argc, char *argv[])  {
 
                         }
 
-                        if(i > overlap_interval_begin+2 && i < overlap_interval_end)    {
+                        if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
 
                             g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -841,7 +843,7 @@ int main(int argc, char *argv[])  {
 
                         }
 
-                        if(i > overlap_interval_begin+2 && i < overlap_interval_end)    {
+                        if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
 
                             g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1143,7 +1145,7 @@ int main(int argc, char *argv[])  {
     }
 
     for(int i = 0; i <= top_b; i++)  {
-        if((i!=2*(L*L)-1) && i%2==0)    {
+        if((i!=2*(L*L)-1) && i%2==0 && i > 4)    {
             if((g_normalized[i]) >= 0 && (g_normalized[i])==(g_normalized[i]))
             out_f_ds << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << g_normalized[i] << "\n";
         }
