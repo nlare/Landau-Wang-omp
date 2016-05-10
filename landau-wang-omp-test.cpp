@@ -4,7 +4,6 @@
  *  Created on: 24 мая 2014 г.
  *      Author: nlare
  * 
- *  Данная версия ещё довольно далека от состояния готовности, пересылаю в качестве некого промежуточного этапа работы.
  *  Данная программа работает не непосредственно с плотностями энергетических состояний, а с энтропией состояний S(E) = ln(G(E))
  */
 
@@ -23,11 +22,7 @@
 #define DEBUG
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 2
-<<<<<<< HEAD
-#define L 8
-=======
-#define L 128
->>>>>>> 857c9bc68b640fb64707266aac13b4141d128620
+#define L 32
 
 // int neighbour_spins(int,int);
 
@@ -45,7 +40,7 @@ int main(int argc, char *argv[])  {
     double flat_threshold;   // Порог "плоскости" гистограммы
     double time_b, time_e;  
     double T;
-    int it_count_g[2*PP_I], it_count_hist[2*PP_I];
+    int it_count_g[PP_I],it_count_hist[PP_I];
     int it_count_av;
     int global_it_count;
     int count_mcs;
@@ -109,7 +104,7 @@ int main(int argc, char *argv[])  {
 
     }   system_of[PP_I];
 
-    top_b=2*L*L;
+    top_b=L*L;
 
     struct _massive   {
         
@@ -179,23 +174,12 @@ int main(int argc, char *argv[])  {
                   << std::endl;
     }    
 
-    // b = 0;
     for(int i = 0; i < PP_I; i++)   {
         
         b_last[i] = E_min[i];  
         std::cout << "b_last[" << i << "] = " <<  b_last[i] << std::endl;
 
     } 
-
-    // std::cout << "" << std::endl;
-
-    // E_max[1] = 127;
-
-    // #ifdef DEBUG
-    // std::cout << std::setprecision(10) \
-    //           << "Energy level range: top_b = " << top_b << std::endl \
-    //           << "Precision: f_min = " << f_min << std::endl; 
-    // #endif
 
     omp_set_num_threads(PP_I);
 
@@ -207,9 +191,9 @@ int main(int argc, char *argv[])  {
     while(f > f_min)    {
 
         #pragma omp parallel for \
-        firstprivate(f,min_steps,skip,flat_threshold,h,E_min,E_max,top_b) \
+        firstprivate(f,min_steps,skip,flat_threshold,h,E_min,E_max,top_b,it_count_g) \
         private(b_new,b,ln_f)  \
-        shared(system_of,massive,b_last,buffer,convergence_trigger,overlap_interval_begin,overlap_interval_end,it_count_g,it_count_hist)
+        shared(system_of,massive,b_last,buffer,convergence_trigger,overlap_interval_begin,overlap_interval_end)
         for(int pp_i = 0; pp_i < PP_I; pp_i++)  {
         
         int seed = 1 + rand() % 10000;
@@ -250,7 +234,7 @@ int main(int argc, char *argv[])  {
         // }
 
         // if(omp_get_thread_num()==0)
-        // #pragma omp critical
+        #pragma omp critical
         // std::cout << "b = " << b << "\t, sum_spins = " << sum_spins << "\t, rank = " << pp_i << std::endl;
 
         // }
@@ -262,20 +246,24 @@ int main(int argc, char *argv[])  {
 
         // if(omp_get_thread_num() == 1)   {
         //     #pragma omp flush(massive,E_min,E_max)
-        //     massive[pp_i].g[20] = massive[0].g[20];
+        //     // massive[pp_i].g[20] = massive[0].g[20];
 
-        //     for(int i = E_min[pp_i]; i < E_max[0];i++)  {
-        //         massive[pp_i].g[i] = massive[0].g[i];
-        //         massive[pp_i].hist[i] = massive[0].hist[i];
-        //     }
+        //     // for(int i = E_min[pp_i]; i < E_max[0];i++)  {
+        //         // massive[pp_i].g[i] = massive[0].g[i];
+        //         // massive[pp_i].hist[i] = massive[0].hist[i];
+        //     // }
         // }
 
-        #pragma omp flush(massive)
-        for (int i = 0; i < 2*top_b; i++)   {
+        // #pragma omp flush(massive)
+        for (int i = 0; i < top_b; i++)   {
             massive[pp_i].hist[i] = 0;
         }
 
         do {
+
+        // if(mcs < 1000)   {
+            // goto m3;
+        // }
 
         for(int i = 0; i < L; i++)   {
             for(int j = 0; j < L; j++)  {
@@ -345,7 +333,7 @@ int main(int argc, char *argv[])  {
 
         #pragma omp critical 
         {
-        // Если сейчас первая итерация и mcs делится на 100 без остатка, то 
+        // Если первая итерация и mcs делится на 100 без остатка, то 
         if(f == 2.7182818284 && mcs%100 == 0)   {
         // if(omp_get_thread_num() == 0 && ln_f == 1)  {
 
@@ -353,7 +341,7 @@ int main(int argc, char *argv[])  {
                 count_mcs++;
                 // std::cout << "C = " << count_mcs << std::endl;
 
-                // for(int pp_i = 0; pp_i < PP_I; pp_i++)  {
+                for(int pp_i = 0; pp_i < PP_I; pp_i++)  {
 
                 // int first_not_null_g;
                 // int number_of_iteration;
@@ -411,7 +399,7 @@ int main(int argc, char *argv[])  {
     
                 graph_g_f.close();
 
-            // }
+            }
 
         // }
 
@@ -623,6 +611,10 @@ int main(int argc, char *argv[])  {
             double h_delt = 0.0;
             double h_sum = 0.0;
 
+            h_delt = 0.0;
+
+            // #pragma omp critical
+
             // #pragma omp critical
             {
 
@@ -630,30 +622,6 @@ int main(int argc, char *argv[])  {
             // ---------------------------------
             // for(int i = E_min[pp_i]; i < E_max[pp_i]; i++) {
 
-<<<<<<< HEAD
-                // if(massive[pp_i].hist[i] != 0)    {
-                if(i%2 == 0 && i > 4)   {
-                    h_sum += (double)massive[pp_i].hist[i]/min_steps;
-                    h_count++;
-                }
-
-            }
-
-            count = 0;  // Выходим из цикла по окончанию
-
-            for (int i = E_min[pp_i]; i < E_max[pp_i]; i++)    {
-                // if(massive[pp_i].hist[i] != 0)    {
-                if(i%2 == 0 && i > 4)   {
-                    h_delt = massive[pp_i].hist[i]/(h_sum/h_count)/min_steps;
-                    if((h_delt < flat_threshold) || (h_delt >= 1.0+flat_threshold)) break;
-                    // else count = 0;
-
-                    // if(h_delt < flat_threshold) {
-                    //     std::cout << std::endl << "---------------------------" << std::endl;
-                    //     std::cout << i << ":" << h_delt << std::endl;
-                    //     std::cout << "---------------------------" << std::endl;
-                    // }
-=======
             //     // if(massive[pp_i].hist[i] != 0)    {
                 
             //         h_sum += (double)massive[pp_i].hist[i]/min_steps;
@@ -661,7 +629,6 @@ int main(int argc, char *argv[])  {
             //     }
 
             // }
->>>>>>> 857c9bc68b640fb64707266aac13b4141d128620
 
             // // #pragma omp flush
             // count = 0;  // Выходим из цикла по окончанию
@@ -702,41 +669,34 @@ int main(int argc, char *argv[])  {
 
         m2:
 
-<<<<<<< HEAD
-        // #pragma omp critical
-        {
-            
-        std::cout << "Histogram is FLAT for relica #" << pp_i << std::endl; 
-=======
         #pragma omp critical
         std::cout << "Histogram is FLAT for relica #" << pp_i << std::endl;
->>>>>>> 857c9bc68b640fb64707266aac13b4141d128620
 
-        // #pragma omp flush(it_count_g)
+        if(omp_get_thread_num() == 0)    {
 
-        // if(omp_get_thread_num() == 0)    {
-        #pragma omp critical 
-        {
+        for(int rank = 0; rank < PP_I; rank++)  {
 
-        it_count_g[pp_i]++;
-        std::cout << "it[" << pp_i << "]=" << it_count_g[pp_i] << std::endl;
-        // for(int rank = 0; rank < PP_I; rank++)  {
+        int first_not_null_g;
+        double min_g_value;
+        
+        it_count_g[rank]++;
+        std::cout << "it[" << rank << "]=" << it_count_g[rank] << std::endl;
 
         ss.str("");
         ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << pp_i;
         boost::filesystem::create_directories(ss.str().c_str());
 
-        ss << "/" << it_count_g[pp_i] << ".dat";
+        ss << "/" << it_count_g[rank] << ".dat";
         // std::cout << "write to " << ss.str() << std::endl;
 
         test_g_f.open(ss.str().c_str());
 
-        for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
+        for(int i = E_min[rank]; i < E_max[rank]; i++)  {
             // if((i!=2*E_max[pp_i]-1) && (massive[pp_i].hist[i] != 0))    {
-            if((i!=2*E_max[pp_i]-1) && (i%2 == 0))    {
+            if((i!=2*E_max[rank]-1) && (i%2 != 0))    {
             // if(((i!=2*E_max[pp_i]-1) && i%2 == 0) || i == 0)    {
                 // test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[pp_i].g[i] << "\n";
-                test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[pp_i].g[i] << "\n";
+                test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[rank].g[i] << "\n";
                 // std::cout << "massive.g[" << i << "]=" << massive[pp_i].g[i] << std::endl;
             }
         }
@@ -744,36 +704,34 @@ int main(int argc, char *argv[])  {
         test_g_f.close();
 
         ss.str("");
-        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << pp_i << "/temp";
+        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << rank << "/temp";
         boost::filesystem::create_directories(ss.str().c_str());
 
         ss.str("");
-        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-" << pp_i << "/temp/" << it_count_g[pp_i] << ".plot";
+        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-" << rank << "/temp/" << it_count_g[rank] << ".plot";
         graph_g_f.open(ss.str().c_str());
 
         ss.str("");
-        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << pp_i << "/graphs";
+        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << rank << "/graphs";
         boost::filesystem::create_directories(ss.str().c_str());
 
         ss.str("");
-        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-" << pp_i << "/" << it_count_g[pp_i] << ".dat";
+        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-" << rank << "/" << it_count_g[rank] << ".dat";
 
         graph_g_f << "#!/usr/bin/gnuplot -persist\n" << \
                  "set terminal jpeg font arial 12 size 800,600\n" << \
-                 "set output \"test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << pp_i << "/graphs/" << it_count_g[pp_i] << ".jpg\"\n" << \
+                 "set output \"test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << rank << "/graphs/" << it_count_g[rank] << ".jpg\"\n" << \
                  "set grid x y\n" << \
                  "set xtics 20 \n" << \
                  "set ytics 1000 \n" << \
                  "set mxtics 5 \n" << \
                  "set mytics 5  \n" << \
-                 "set xrange [" << E_min[pp_i] << ":" << E_max[pp_i] << "]\n" << \
-                 "set xlabel \"i [" << E_min[pp_i] << ":" << E_max[pp_i] << "]" << "\"\n" << \
+                 "set xrange [" << E_min[rank] << ":" << E_max[rank] << "]\n" << \
+                 "set xlabel \"i [" << E_min[rank] << ":" << E_max[rank] << "]" << "\"\n" << \
                  "set ylabel \"G(i)\"\n" << \
-                 "plot \"" << ss.str() << "\" using 1:3 title \"landau-wang-" << L << "-iteration-" << it_count_g[pp_i] << "\" with lines lt rgb \"red\"";
+                 "plot \"" << ss.str() << "\" using 1:3 title \"landau-wang-" << L << "-iteration-" << it_count_g[rank] << "\" with lines lt rgb \"red\"";
 
         graph_g_f.close();
-
-        // }
 
         }
 
@@ -788,7 +746,7 @@ int main(int argc, char *argv[])  {
 
         }
 
-        #pragma omp barrier
+        // #pragma omp barrier
 
         // Процедура усреднения и перераспределения между репликами среднего значения плотности энергетических состояний
 
@@ -796,7 +754,7 @@ int main(int argc, char *argv[])  {
 
         if(omp_get_thread_num() == 0)   {
 
-        int div_averaging[top_b+1];
+        int div_averaging[top_b];
 
         // for(int i = 0; i < overlap_interval_begin+4; i++) {
         //     div_averaging[i] = 1;
@@ -919,7 +877,7 @@ int main(int argc, char *argv[])  {
         #pragma omp flush(massive)
 
         // if(omp_get_thread_num() == 0)   {
-            // std::cout << "Check1: g_averaged = " << g_averaged[0] << std::endl;
+            std::cout << "Check1: g_averaged = " << g_averaged[0] << std::endl;
         // }
 
         for(int i = 0; i < top_b; i++)     {
@@ -1072,7 +1030,7 @@ int main(int argc, char *argv[])  {
         if(L == 8)  {
             // if(massive[0].hist[i]!=0 || massive[ 1].hist[i]!=0)
             if(i%2 == 0 && i > 2)   {
-            std::cout << std::fixed << "g[" << i << "]\t= " << g_averaged[i] << "\t|\t " << massive[0].g[i] << "\t" << massive[1].g[i] << "\t|\t" \
+            std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":\t" << massive[0].g[i] << "\t" << massive[1].g[i] << "\t" \
                       << g_normalized[i] << std::endl;
                   // << "\t" << massive[0].g[i] - massive[0].g[4] << "\t" \
                   // << massive[1].g[i] - massive[1].g[20] << "\t" \
@@ -1395,7 +1353,7 @@ int MakeScriptsForAnimation(std::string str)   {
             graph_sh.open(ss.str().c_str());
             graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/Hist-L=" << L << "_PP=" << PP_I << "-" << intervals << "/temp/*.plot\n";
             graph_sh <<  "convert -delay 10 -loop 0 test_g/Hist-L=" << L << "_PP=" << PP_I << "-" << intervals << \
-                    "/graphs/{1..100}.jpg animate-Hist-L=" << L << "_PP=" << PP_I << "-" << intervals << ".gif\n";
+                    "/graphs/{1..200}.jpg animate-Hist-L=" << L << "_PP=" << PP_I << "-" << intervals << ".gif\n";
             graph_sh.close();
 
         }
@@ -1406,7 +1364,7 @@ int MakeScriptsForAnimation(std::string str)   {
         graph_sh.open(ss.str().c_str());
         graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/Hist-L=" << L << "_PP=" << PP_I << "-AV" << "/temp/*.plot\n";
         graph_sh <<  "convert -delay 10 -loop 0 test_g/Hist-L=" << L << "_PP=" << PP_I << "-AV" << \
-                            "/graphs/{1..100}.jpg animate-Hist-L=" << L << "_PP=" << PP_I <<"-AV" << ".gif\n";
+                            "/graphs/{1..200}.jpg animate-Hist-L=" << L << "_PP=" << PP_I <<"-AV" << ".gif\n";
         graph_sh.close();
 
     }
