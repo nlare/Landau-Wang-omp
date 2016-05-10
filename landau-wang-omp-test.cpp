@@ -23,7 +23,11 @@
 #define DEBUG
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 2
+<<<<<<< HEAD
 #define L 8
+=======
+#define L 128
+>>>>>>> 857c9bc68b640fb64707266aac13b4141d128620
 
 // int neighbour_spins(int,int);
 
@@ -622,8 +626,11 @@ int main(int argc, char *argv[])  {
             // #pragma omp critical
             {
 
-            for(int i = E_min[pp_i]; i < E_max[pp_i]; i++) {
+            // Проверка на плоскость гистограммы
+            // ---------------------------------
+            // for(int i = E_min[pp_i]; i < E_max[pp_i]; i++) {
 
+<<<<<<< HEAD
                 // if(massive[pp_i].hist[i] != 0)    {
                 if(i%2 == 0 && i > 4)   {
                     h_sum += (double)massive[pp_i].hist[i]/min_steps;
@@ -646,13 +653,38 @@ int main(int argc, char *argv[])  {
                     //     std::cout << i << ":" << h_delt << std::endl;
                     //     std::cout << "---------------------------" << std::endl;
                     // }
+=======
+            //     // if(massive[pp_i].hist[i] != 0)    {
+                
+            //         h_sum += (double)massive[pp_i].hist[i]/min_steps;
+            //         h_count++;
+            //     }
 
-                    // else goto m2;
-                //     if((massive[pp_i].g[i] < E_max[pp_i]) && (massive[pp_i].g[i] > E_max[pp_i]-4 ) ) {
-                //     std::cout << i << ":" << h_delt << std::endl;
-                // }
-                }
-            }
+            // }
+>>>>>>> 857c9bc68b640fb64707266aac13b4141d128620
+
+            // // #pragma omp flush
+            // count = 0;  // Выходим из цикла по окончанию
+
+            // for (int i = E_min[pp_i]; i < E_max[pp_i]; i++)    {
+            //     if(massive[pp_i].hist[i] != 0)    {
+            //         h_delt = (massive[pp_i].hist[i]/(h_sum/h_count))/min_steps;
+            //         if((h_delt < flat_threshold) || (h_delt > 1+flat_threshold)) break;
+            //         // else count = 0;
+
+            //         // if(h_delt < flat_threshold) {
+            //         //     std::cout << std::endl << "---------------------------" << std::endl;
+            //         //     std::cout << i << ":" << h_delt << std::endl;
+            //         //     std::cout << "---------------------------" << std::endl;
+            //         // }
+
+            //         // else goto m2;
+            //     //     if((massive[pp_i].g[i] < E_max[pp_i]) && (massive[pp_i].g[i] > E_max[pp_i]-4 ) ) {
+            //     //     std::cout << i << ":" << h_delt << std::endl;
+            //     // }
+            //     }
+            // }
+            // ---------------------------------
 
             }
 
@@ -666,14 +698,19 @@ int main(int argc, char *argv[])  {
         
         }   else count = 1;
 
-        }   while(count);
+        }   while(mcs <= 10000);
 
         m2:
 
+<<<<<<< HEAD
         // #pragma omp critical
         {
             
         std::cout << "Histogram is FLAT for relica #" << pp_i << std::endl; 
+=======
+        #pragma omp critical
+        std::cout << "Histogram is FLAT for relica #" << pp_i << std::endl;
+>>>>>>> 857c9bc68b640fb64707266aac13b4141d128620
 
         // #pragma omp flush(it_count_g)
 
@@ -776,14 +813,18 @@ int main(int argc, char *argv[])  {
         //     // g_averaged[i] -= 1;
         // }
 
-        for(int i = 0; i <= top_b; i++)  {
+        std::cout << "TEST1!\n";
+
+        for(int i = 0; i < top_b; i++)  {
            div_averaging[i] = PP_I;
         }
 
-        for(int i = 0; i < 4*top_b; i++)    {
+        for(int i = 0; i < 2*top_b; i++)    {
             g_averaged[i] = 1.0;
             hist_averaged[i] = 0.0;
         }
+
+        std::cout << "TEST2!\n";
 
         // std::cout << "overlap_interval_begin = " << overlap_interval_begin << "; overlap_interval_end = " << overlap_interval_end << std::endl;
         #pragma omp flush(massive)
