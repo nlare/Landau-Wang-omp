@@ -20,9 +20,14 @@
 #include "mersenne.cpp"
 
 #define DEBUG
+// #define DEBUG_H_SUM_G_SUM
+// #define DEBUG_G
+// #define COUT_IF_HIST_FLAT
+// #define CHECK_H_DELT
+#define COUT_EVERY_NUM_STEPS
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 2
-#define L 32
+#define L 64
 
 // int neighbour_spins(int,int);
 
@@ -64,7 +69,7 @@ int main(int argc, char *argv[])  {
     double g_normalized[4*L*L];
 
     std::cout << "adding hist_averaged massive\n";
-    double  hist_averaged[4*top_b];
+    double  hist_averaged[4*2*L*L];
 
     CRandomMersenne rg(13617235);
 
@@ -77,11 +82,13 @@ int main(int argc, char *argv[])  {
     ss << "test_g";
     boost::filesystem::create_directories(ss.str().c_str());
 
+
     f = 2.7182818284;  // В работе Ландау-Ванга было указано значение "f" равное экспоненте 
     f_min = 1.000001;  // Данная переменная должна быть около единицы
     min_steps = 10000;
     skip = 10000;
     flat_threshold = 0.8;
+    // overlap = 0.75;
     overlap = 0.75;
     h = 1;
 
@@ -225,6 +232,9 @@ int main(int argc, char *argv[])  {
         }
 
         int sum_spins = 0;
+
+        std::cout << std::fixed << std::setprecision(8);
+
         // count_mcs = 0;
 
         // for(int i = 0; i < L; i++)    {
@@ -272,6 +282,8 @@ int main(int argc, char *argv[])  {
                 int cj = Mersenne.IRandom(0, L-1);
 
                 // if(system_of[pp_i].defect[ci][cj] == false) goto m1;  // Исключаем немагнитные спины
+
+                // int L_C = L*overlap;
 
                 int neighbour_spins = 0;
                 #pragma omp flush(system_of)
@@ -607,18 +619,18 @@ int main(int argc, char *argv[])  {
 
             #endif
 
-            int h_count = 0;
-            double h_delt = 0.0;
-            double h_sum = 0.0;
+            // int h_count = 0;
+            // double h_delt = 0.0;
+            // double h_sum = 0.0;
 
-            h_delt = 0.0;
+            // h_delt = 0.0;
 
             // #pragma omp critical
 
             // #pragma omp critical
             {
 
-            // Проверка на плоскость гистограммы
+            // Старый вариант проверки на плоскость гистограммы
             // ---------------------------------
             // for(int i = E_min[pp_i]; i < E_max[pp_i]; i++) {
 
@@ -653,24 +665,97 @@ int main(int argc, char *argv[])  {
             // }
             // ---------------------------------
 
+            // Новый вариант проверки на плоскость гистограммы основанный на среднеквадратичном отклонении
+            // ---------------------------------
+
+                #pragma omp flush(massive)
+
+                double histav2 = 0.0; // Квадрат суммы
+                double hist2av = 0.0; // Сумма квадратов
+                double delta = 0.0;
+
+                double min_hist = 0.0;
+                int min_hist_index = 0;
+
+                int hi_count = 0;
+
+                count = 0;
+
+                min_hist_index = (E_min[pp_i] + E_max[pp_i])/2;
+                min_hist = massive[pp_i].hist[min_hist_index];
+
+                for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
+                    
+                    if(min_hist > massive[pp_i].hist[i] && massive[pp_i].hist[i] > 0)    {
+
+                        min_hist = massive[pp_i].hist[i];
+
+                    }
+
+                }
+                #pragma omp flush
+                std::cout << "min_hist = " << min_hist << std::endl;
+
+                for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
+
+                    if(i > 4 && i%2 == 0 && massive[pp_i].hist[i] > 0)   {
+
+                        histav2 += (massive[pp_i].hist[i] - min_hist);
+                        std::cout << "massive = " << massive[pp_i].hist[i] - min_hist << std::endl;
+                        hist2av += (massive[pp_i].hist[i] - min_hist)*(massive[pp_i].hist[i] - min_hist);
+
+                        hi_count++;
+
+                    }
+
+                }
+
+                // hist2av = abs(hist2av);
+                histav2 = histav2/hi_count;
+
+                delta = hist2av - histav2*histav2;
+                delta = powf(delta, 0.5);
+                delta = delta/min_steps;
+
+                if(delta > 1+flat_threshold || delta < 1-flat_threshold) count = 1;
+                if(mcs >= 30000) count = 0;
+
+                std::cout << "hist2av = " << hist2av << "; histav2 = " << histav2 << "; hi_count = " << hi_count << "; delta = " << delta << std::endl;
+
+
+            // ---------------------------------
+
             }
 
             // #pragma omp flush
             // if(count == 1 && h_delt > flat_threshold) goto m2;
             // printf("h_delt = %f\n",h_delt);
             #pragma omp critical
-            std::cout << std::setprecision(8) << "f=" << f << ", ln_f=" << ln_f << ", flat_threshold = " << flat_threshold << ", h_delt = " << h_delt << ", count = " << count << ", PP = " << pp_i << std::endl;
+            {
+
+            #ifdef CHECK_H_DELT
+                std::cout << std::setprecision(8) << "f=" << f << ", ln_f=" << ln_f << ", flat_threshold = " << flat_threshold << ", h_delt = " << h_delt << ", count = " << count << ", PP = " << pp_i << std::endl;
+            #endif
+
+            #ifdef COUT_EVERY_NUM_STEPS
+                std::cout << "L = " << L << ": f = " << f << ", ln_f = " << ln_f << "; PP = " << PP_I << "; thread = " << pp_i << ": mcs = " << mcs << std::endl; 
+            #endif
+
+            }
             // Убрать, если все будет хорошо считаться
             // if(mcs > 100000) goto m2;
         
         }   else count = 1;
 
-        }   while(mcs <= 10000);
+        }   while(count);
 
         m2:
 
         #pragma omp critical
+
+        #ifdef COUT_IF_HIST_FLAT
         std::cout << "Histogram is FLAT for relica #" << pp_i << std::endl;
+        #endif
 
         if(omp_get_thread_num() == 0)    {
 
@@ -680,7 +765,7 @@ int main(int argc, char *argv[])  {
         double min_g_value;
         
         it_count_g[rank]++;
-        std::cout << "it[" << rank << "]=" << it_count_g[rank] << std::endl;
+        // std::cout << "it[" << rank << "]=" << it_count_g[rank] << std::endl;
 
         ss.str("");
         ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << pp_i;
@@ -741,8 +826,16 @@ int main(int argc, char *argv[])  {
         // std::cout << "b_last[" << pp_i << "]= " << b_last[pp_i] << std::endl;
         // convergence_trigger[pp_i] = true;
 
+        for(int i = 0; i < top_b; i++)  {
+
+            massive[pp_i].hist[i] = 0.0;
+
+        }
+
         #pragma omp critical
-        std::cout << std::fixed << std::setprecision(8) << "L - " << L << ": f = " << f << ", ln_f = " << ln_f << ", mcs = " << mcs << ", thread #" << omp_get_thread_num() << std::endl;
+        std::cout << "-----------------------------\n";
+        std::cout << "#" << pp_i << ": mcs = " << mcs << " IS FLAT" << std::endl; 
+        std::cout << "-----------------------------\n";
 
         }
 
@@ -771,7 +864,7 @@ int main(int argc, char *argv[])  {
         //     // g_averaged[i] -= 1;
         // }
 
-        std::cout << "TEST1!\n";
+        // std::cout << "TEST1!\n";
 
         for(int i = 0; i < top_b; i++)  {
            div_averaging[i] = PP_I;
@@ -782,13 +875,17 @@ int main(int argc, char *argv[])  {
             hist_averaged[i] = 0.0;
         }
 
-        std::cout << "TEST2!\n";
+        // std::cout << "TEST2!\n";
 
         // std::cout << "overlap_interval_begin = " << overlap_interval_begin << "; overlap_interval_end = " << overlap_interval_end << std::endl;
         #pragma omp flush(massive)
 
         for(int i = 0; i < top_b; i++)  {
+
+            #ifdef DEBUG_H_SUM_G_SUM
             std::cout << "------------------------------------------------------------------" << std::endl;
+            #endif
+
             max_in_pp_i = 0;   
             for(int rank = 0; rank < PP_I; rank++)  {
                  // if(massive[pp_i].hist[i]!=0) 
@@ -865,8 +962,10 @@ int main(int argc, char *argv[])  {
                     }
                 }
 
+                #ifdef DEBUG_H_SUM_G_SUM
                 std::cout << "pp_i = " << rank << ": i: " << i << ": H_SUM=" << hist_averaged[i] << ", H[" << rank << "]=" << (double) massive[rank].hist[i] \
                               << ", G_SUM=" << g_averaged[i] << ", G[" << rank << "]=" << massive[rank].g[i] << std::endl;
+                #endif
             }   
         }
 
@@ -877,7 +976,7 @@ int main(int argc, char *argv[])  {
         #pragma omp flush(massive)
 
         // if(omp_get_thread_num() == 0)   {
-            std::cout << "Check1: g_averaged = " << g_averaged[0] << std::endl;
+            // std::cout << "Check1: g_averaged = " << g_averaged[0] << std::endl;
         // }
 
         for(int i = 0; i < top_b; i++)     {
@@ -887,8 +986,11 @@ int main(int argc, char *argv[])  {
                 count++;
                 g_averaged[i]/=div_averaging[i];
                 hist_averaged[i]/=div_averaging[i];
-                std::cout << "i:" << i << " :: G0[" << i << "]=" << massive[0].g[i] << " :: G1[" << i << "]=" << massive[1].g[i] <<  " :: G_AV[" << i << "]=" << g_averaged[i] << " :: HIST_AV[" << i << "]=" << hist_averaged[i] << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;
 
+                // #define DEBUG_G
+                #ifdef DEBUG_G
+                std::cout << "i:" << i << " :: G0[" << i << "]=" << massive[0].g[i] << " :: G1[" << i << "]=" << massive[1].g[i] <<  " :: G_AV[" << i << "]=" << g_averaged[i] << " :: HIST_AV[" << i << "]=" << hist_averaged[i] << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;
+                #endif 
             }
         }
 
@@ -984,7 +1086,7 @@ int main(int argc, char *argv[])  {
 
     // std::cout << "Thread #" << omp_get_thread_num() << std::endl;
 
-    // #pragma omp flush(massive)
+    #pragma omp flush(massive)
 
     min_in_ge = g_averaged[4]; // index may be anything (not L*L)
 
@@ -1027,7 +1129,7 @@ int main(int argc, char *argv[])  {
         }
         // g_averaged[i]/=div_averaging[i];
         // if(g_averaged[i] > 1.0)
-        if(L == 8)  {
+        // if(L == 8)  {
             // if(massive[0].hist[i]!=0 || massive[ 1].hist[i]!=0)
             if(i%2 == 0 && i > 2)   {
             std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":\t" << massive[0].g[i] << "\t" << massive[1].g[i] << "\t" \
@@ -1036,35 +1138,7 @@ int main(int argc, char *argv[])  {
                   // << massive[1].g[i] - massive[1].g[20] << "\t" \
     
             }
-        }
-
-        if(L == 16 && PP_I == 2)  {
-            // if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0)
-            if(i%2 == 0 && i > 2)
-            std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":" \
-                  << "\t" << massive[0].g[i] << "\t" << massive[1].g[i]\
-                  << "\t" << massive[0].g[i] - massive[0].g[4] << "\t"\
-                  << massive[1].g[i] - massive[1].g[68] << "\t" << g_averaged[i] - min_in_ge << std::endl;
-        }
-
-        if(L == 16 && PP_I == 4)  {
-            // if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0 || massive[2].hist[i]!=0 || massive[3].hist[i]!=0)
-            if(i%2 == 0 && i > 2)
-            std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":" \
-                  << "\t" << massive[0].g[i] << "\t" << massive[1].g[i]\
-                  << "\t" << massive[2].g[i] << "\t" << massive[3].g[i]\
-                  << "\t" << massive[0].g[i] - massive[0].g[4] << "\t"\
-                  << massive[1].g[i] - massive[1].g[68] << "\t" << g_averaged[i] - min_in_ge << std::endl;
-        }
-
-        if(L > 16 && PP_I > 2)  {
-            // if(massive[0].hist[i]!=0 || massive[1].hist[i]!=0)
-            if(i%2 == 0 && i > 2)
-            std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":" \
-                  << "\t" << massive[0].g[i] << "\t" << massive[1].g[i]\
-                  << "\t" << massive[0].g[i] - massive[0].g[4] << "\t"\
-                  << massive[1].g[i] - massive[1].g[68] << "\t" << g_averaged[i] - min_in_ge << std::endl;
-        }
+        // }
 
     }  
 
