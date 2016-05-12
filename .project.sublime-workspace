@@ -4,6 +4,38 @@
 		"selected_items":
 		[
 			[
+				"o",
+				"overlap"
+			],
+			[
+				"min",
+				"min_hist_index"
+			],
+			[
+				"his",
+				"hist"
+			],
+			[
+				"h_co",
+				"hi_count"
+			],
+			[
+				"hist",
+				"hist2av"
+			],
+			[
+				"hi",
+				"histav2"
+			],
+			[
+				"n",
+				"n"
+			],
+			[
+				"en",
+				"endl"
+			],
+			[
 				"it",
 				"it_count_hist"
 			],
@@ -68,18 +100,18 @@
 	"buffers":
 	[
 		{
-			"file": "landau-wang-omp-test.cpp",
-			"settings":
-			{
-				"buffer_size": 50786,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "/home/nlare/_code/tex-guide_git_client_server/document.tex",
 			"settings":
 			{
 				"buffer_size": 2902,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "landau-wang-omp-test.cpp",
+			"settings":
+			{
+				"buffer_size": 52121,
 				"line_ending": "Unix"
 			}
 		},
@@ -228,6 +260,7 @@
 	],
 	"file_history":
 	[
+		"/home/nlare/_code/cpp-Landau-Wang-omp-averaged/landau-wang-omp-test.cpp",
 		"/home/nlare/_code/tex-ClamAV/document.tex",
 		"/home/nlare/_code/tex-guide_NFS_commands/document.tex",
 		"/home/nlare/data/downloads/Links.txt",
@@ -294,49 +327,6 @@
 			[
 				{
 					"buffer": 0,
-					"file": "landau-wang-omp-test.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 50786,
-						"regions":
-						{
-							"bookmarks":
-							{
-								"flags": 144,
-								"icon": "bookmark",
-								"regions":
-								[
-									[
-										24744,
-										24744
-									]
-								],
-								"scope": "bookmarks"
-							}
-						},
-						"selection":
-						[
-							[
-								777,
-								777
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 453.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"file": "/home/nlare/_code/tex-guide_git_client_server/document.tex",
 					"semi_transient": false,
 					"settings":
@@ -348,8 +338,8 @@
 						"selection":
 						[
 							[
-								2755,
-								2755
+								0,
+								0
 							]
 						],
 						"settings":
@@ -359,7 +349,58 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 217.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "landau-wang-omp-test.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 52121,
+						"regions":
+						{
+							"bookmarks":
+							{
+								"flags": 144,
+								"icon": "bookmark",
+								"regions":
+								[
+									[
+										24375,
+										24375
+									],
+									[
+										26723,
+										26703
+									],
+									[
+										27571,
+										27571
+									]
+								],
+								"scope": "bookmarks"
+							}
+						},
+						"selection":
+						[
+							[
+								7304,
+								7304
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3159.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -391,8 +432,8 @@
 						"selection":
 						[
 							[
-								1885,
-								1885
+								2595,
+								2595
 							]
 						],
 						"settings":
@@ -402,10 +443,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 390.0,
+						"translation.y": 780.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
