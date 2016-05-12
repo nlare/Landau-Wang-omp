@@ -6,7 +6,7 @@ set xtics 20
 set ytics 1000 
 set mxtics 5 
 set mytics 5  
-set xrange [38:512]
-set xlabel "i [38:512]"
+set xrange [12:512]
+set xlabel "i [12:512]"
 set ylabel "G(i)"
 plot "test_g/DoS-L=16_PP=2-1/1.dat" using 1:3 title "landau-wang-16-iteration-1" with lines lt rgb "red"

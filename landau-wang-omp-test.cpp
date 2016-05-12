@@ -27,7 +27,7 @@
 #define COUT_EVERY_NUM_STEPS
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 2
-#define L 64
+#define L 16
 
 // int neighbour_spins(int,int);
 
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])  {
     skip = 10000;
     flat_threshold = 0.8;
     // overlap = 0.75;
-    overlap = 0.75;
+    overlap = 0.95;
     h = 1;
 
     it_count_av = 0;
@@ -682,11 +682,14 @@ int main(int argc, char *argv[])  {
                 count = 0;
 
                 min_hist_index = (E_min[pp_i] + E_max[pp_i])/2;
+
+                if(min_hist_index%2 != 0) min_hist_index += 1;
+
                 min_hist = massive[pp_i].hist[min_hist_index];
 
                 for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
                     
-                    if(min_hist > massive[pp_i].hist[i] && massive[pp_i].hist[i] > 0)    {
+                    if(i%2 == 0 && min_hist > massive[pp_i].hist[i] && massive[pp_i].hist[i] > 0)    {
 
                         min_hist = massive[pp_i].hist[i];
 
@@ -701,7 +704,7 @@ int main(int argc, char *argv[])  {
                     if(i > 4 && i%2 == 0 && massive[pp_i].hist[i] > 0)   {
 
                         histav2 += (massive[pp_i].hist[i] - min_hist);
-                        std::cout << "massive = " << massive[pp_i].hist[i] - min_hist << std::endl;
+                        // std::cout << pp_i << ": hist[" << i << "]=" << massive[pp_i].hist[i] - min_hist << std::endl;
                         hist2av += (massive[pp_i].hist[i] - min_hist)*(massive[pp_i].hist[i] - min_hist);
 
                         hi_count++;
@@ -717,7 +720,8 @@ int main(int argc, char *argv[])  {
                 delta = powf(delta, 0.5);
                 delta = delta/min_steps;
 
-                if(delta > 1+flat_threshold || delta < 1-flat_threshold) count = 1;
+                // if(delta > 1+flat_threshold || delta < 1-flat_threshold) count = 1;
+                if(delta > flat_threshold) count = 1;
                 if(mcs >= 30000) count = 0;
 
                 std::cout << "hist2av = " << hist2av << "; histav2 = " << histav2 << "; hi_count = " << hi_count << "; delta = " << delta << std::endl;
@@ -1092,7 +1096,7 @@ int main(int argc, char *argv[])  {
 
     for(int i = 0; i < top_b; i++)  {
         // if(hist_averaged[i]!=0)  {
-        if(i%2 == 0 && i >= 4)  {
+        if(i%2 == 0 && i >= 4 && g_averaged[i] != 1.0)  {
             if(g_averaged[i] < min_in_ge)
             min_in_ge = g_averaged[i];
         }

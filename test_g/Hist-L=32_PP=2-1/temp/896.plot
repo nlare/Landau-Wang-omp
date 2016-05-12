@@ -6,8 +6,8 @@ set xtics 10
 set ytics 2000 
 set mxtics 10 
 set mytics 10  
-set xrange [256:2048]
+set xrange [51:2048]
 set yrange [0:20000]
-set xlabel "i [256:2048]"
+set xlabel "i [51:2048]"
 set ylabel "Hist(i)"
 plot "test_g/Hist-L=32_PP=2-1/896.dat" using 1:3 title "landau-wang-32-iteration-896" with lines lt rgb "red"
