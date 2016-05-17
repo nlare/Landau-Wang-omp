@@ -27,7 +27,7 @@
 #define COUT_EVERY_NUM_STEPS
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 2
-#define L 16
+#define L 32
 
 // int neighbour_spins(int,int);
 
@@ -670,9 +670,9 @@ int main(int argc, char *argv[])  {
 
                 #pragma omp flush(massive)
 
-                double histav2 = 0.0; // Квадрат суммы
-                double hist2av = 0.0; // Сумма квадратов
-                double delta = 0.0;
+                long double histav2 = 0.0; // Квадрат суммы
+                long double hist2av = 0.0; // Сумма квадратов
+                long double delta = 0.0;
 
                 double min_hist = 0.0;
                 int min_hist_index = 0;
@@ -696,16 +696,19 @@ int main(int argc, char *argv[])  {
                     }
 
                 }
+
                 #pragma omp flush
                 std::cout << "min_hist = " << min_hist << std::endl;
 
                 for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
 
-                    if(i > 4 && i%2 == 0 && massive[pp_i].hist[i] > 0)   {
+                    if((i > 4) && (i%2 == 0) && (massive[pp_i].hist[i] > 0))   {
 
-                        histav2 += (massive[pp_i].hist[i] - min_hist);
+                        // histav2 += (massive[pp_i].hist[i] - min_hist);
+                        histav2 += (massive[pp_i].hist[i]);
                         // std::cout << pp_i << ": hist[" << i << "]=" << massive[pp_i].hist[i] - min_hist << std::endl;
-                        hist2av += (massive[pp_i].hist[i] - min_hist)*(massive[pp_i].hist[i] - min_hist);
+                        // hist2av += (massive[pp_i].hist[i] - min_hist)*(massive[pp_i].hist[i] - min_hist);
+                        hist2av += (massive[pp_i].hist[i])*(massive[pp_i].hist[i]);
 
                         hi_count++;
 
@@ -718,7 +721,7 @@ int main(int argc, char *argv[])  {
 
                 delta = hist2av - histav2*histav2;
                 delta = powf(delta, 0.5);
-                delta = delta/min_steps;
+                // delta = delta/min_steps;
 
                 // if(delta > 1+flat_threshold || delta < 1-flat_threshold) count = 1;
                 if(delta > flat_threshold) count = 1;
