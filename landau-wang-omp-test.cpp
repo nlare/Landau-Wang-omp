@@ -20,7 +20,8 @@
 #include "mersenne.cpp"
 
 #define DEBUG
-// #define DEBUG_H_SUM_G_SUM
+#define DEBUG_H_SUM_G_SUM
+#define E_MIN_E_MAX_OUT
 // #define DEBUG_G
 // #define COUT_IF_HIST_FLAT
 // #define CHECK_H_DELT
@@ -175,6 +176,20 @@ int main(int argc, char *argv[])  {
 
         E_min[rank-1] = value*(rank-1);
         E_max[rank-1] = top_b*overlap + value*rank;
+
+        // if((rg.IRandom(0,1000)/1000) > 0.5) {
+
+            if(E_min[rank-1]%2!=0)   {
+
+                E_min[rank-1] +=1;
+
+            }
+
+            if(E_max[rank-1]%2!=0)  {
+
+                E_max[rank-1] +=1;
+
+            }
 
         std::cout << std::fixed << std::setprecision(4) << "E_min[" << rank-1 << "]=" << E_min[rank-1] \
                   << ", E_max[" << rank-1 << "]=" << E_max[rank-1] << ", overlap=" << overlap \
@@ -424,6 +439,8 @@ int main(int argc, char *argv[])  {
         mcs++;
         c++;
 
+        #pragma omp flush(E_min, E_max)
+
         // #pragma omp critical
         // {
         //     std::cout << "mcs[" << pp_i << "]:" << mcs << std::endl;
@@ -519,6 +536,8 @@ int main(int argc, char *argv[])  {
 
             // prob = 0.01;
             // count = 0;
+
+            #pragma omp flush(E_min, E_max)
 
             // int first_not_null_g_for_pp_i, first_not_null_g_for_exchange_replica; 
             // double delta_G = 0.0;
@@ -973,8 +992,16 @@ int main(int argc, char *argv[])  {
                 std::cout << "pp_i = " << rank << ": i: " << i << ": H_SUM=" << hist_averaged[i] << ", H[" << rank << "]=" << (double) massive[rank].hist[i] \
                               << ", G_SUM=" << g_averaged[i] << ", G[" << rank << "]=" << massive[rank].g[i] << std::endl;
                 #endif
+
+                #ifdef E_MIN_E_MAX_OUT
+                std::cout << "E_min[" << 0 << "]=" << E_min[0] << std::endl; 
+                std::cout << "E_min[" << 1 << "]=" << E_min[1] << std::endl; 
+                std::cout << "E_max[" << 0 << "]=" << E_max[0] << std::endl; 
+                std::cout << "E_max[" << 1 << "]=" << E_max[1] << std::endl; 
+                #endif
             }   
         }
+
 
         std::cout << std::endl;
 
