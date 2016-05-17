@@ -28,7 +28,7 @@
 #define COUT_EVERY_NUM_STEPS
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 2
-#define L 32
+#define L 64
 
 // int neighbour_spins(int,int);
 
