@@ -20,15 +20,16 @@
 #include "mersenne.cpp"
 
 #define DEBUG
-#define DEBUG_H_SUM_G_SUM
-#define E_MIN_E_MAX_OUT
-// #define DEBUG_G
+#define DEBUG_G
+// #define DEBUG_H_SUM_G_SUM
+// #define E_MIN_E_MAX_OUT
 // #define COUT_IF_HIST_FLAT
 // #define CHECK_H_DELT
 #define COUT_EVERY_NUM_STEPS
+#define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 2
-#define L 64
+#define PP_I 4
+#define L 16
 
 // int neighbour_spins(int,int);
 
@@ -541,7 +542,6 @@ int main(int argc, char *argv[])  {
 
             // int first_not_null_g_for_pp_i, first_not_null_g_for_exchange_replica; 
             // double delta_G = 0.0;
-            #define REPLICAEXHANGE 
             #ifdef REPLICAEXHANGE
             #pragma omp critical
             {           
@@ -716,7 +716,7 @@ int main(int argc, char *argv[])  {
 
                 }
 
-                #pragma omp flush
+                #pragma omp flush(massive)
                 std::cout << "min_hist = " << min_hist << std::endl;
 
                 for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
@@ -1023,7 +1023,10 @@ int main(int argc, char *argv[])  {
 
                 // #define DEBUG_G
                 #ifdef DEBUG_G
-                std::cout << "i:" << i << " :: G0[" << i << "]=" << massive[0].g[i] << " :: G1[" << i << "]=" << massive[1].g[i] <<  " :: G_AV[" << i << "]=" << g_averaged[i] << " :: HIST_AV[" << i << "]=" << hist_averaged[i] << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;
+                std::cout << "G0[" << i << "]=" << massive[0].g[i] \
+                          << " :: G1[" << i << "]=" << massive[1].g[i] << ":: G2[" << i << "]=" << massive[2].g[i] \
+                          << ":: G3[" << i << "]=" << massive[2].g[i] << ":: G_AV[" << i << "]=" << g_averaged[i] << " :: HIST_AV[" << i << "]=" \
+                          << hist_averaged[i] << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;
                 #endif 
             }
         }
@@ -1141,6 +1144,15 @@ int main(int argc, char *argv[])  {
 
     }
 
+    if(PP_I == 4)    {
+
+        massive[0].g[top_b] = g_averaged[top_b];
+        massive[1].g[top_b] = g_averaged[top_b];
+        massive[2].g[top_b] = g_averaged[top_b];
+        massive[3].g[top_b] = g_averaged[top_b];
+
+    }
+
     std::cout << "min_in_g[E] = " << min_in_ge << std::endl;
 
     // -------------- FOR READISTRIBUTED G[E] -----------------
@@ -1166,7 +1178,8 @@ int main(int argc, char *argv[])  {
         // if(L == 8)  {
             // if(massive[0].hist[i]!=0 || massive[ 1].hist[i]!=0)
             if(i%2 == 0 && i > 2)   {
-            std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] << ":\t" << massive[0].g[i] << "\t" << massive[1].g[i] << "\t" \
+            std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] \
+                      << ":\t" << massive[0].g[i] << "\t" << massive[1].g[i] << "\t" \
                       << g_normalized[i] << std::endl;
                   // << "\t" << massive[0].g[i] - massive[0].g[4] << "\t" \
                   // << massive[1].g[i] - massive[1].g[20] << "\t" \
