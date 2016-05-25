@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"E_m",
+				"E_max"
+			],
+			[
+				"E",
+				"E_max"
+			],
+			[
+				"over",
+				"overlap_interval_end"
+			],
+			[
 				"prin",
 				"println"
 			],
@@ -56,10 +68,6 @@
 				"overlap"
 			],
 			[
-				"over",
-				"overlap_interval_end"
-			],
-			[
 				"omp",
 				"omp_get_thread_num"
 			],
@@ -74,10 +82,6 @@
 			[
 				"h",
 				"h_delt"
-			],
-			[
-				"E",
-				"E_min"
 			],
 			[
 				"it_count_",
@@ -112,31 +116,15 @@
 	"buffers":
 	[
 		{
-			"file": "/home/nlare/_code/cpp-Landau-Wang/landau-wang.cpp",
-			"settings":
-			{
-				"buffer_size": 16354,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "landau-wang-omp-test.cpp",
 			"settings":
 			{
-				"buffer_size": 53441,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/home/nlare/_code/tex-Alcom-quests/document.tex",
-			"settings":
-			{
-				"buffer_size": 4972,
+				"buffer_size": 54057,
 				"line_ending": "Unix"
 			}
 		}
 	],
-	"build_system": "Packages/LaTeXTools/LaTeX.sublime-build",
+	"build_system": "Packages/User/My-C++.sublime-build",
 	"build_system_choices":
 	[
 		[
@@ -206,6 +194,22 @@
 				"Packages/LaTeXTools/LaTeX.sublime-build",
 				""
 			]
+		],
+		[
+			[
+				[
+					"Packages/User/My-C++.sublime-build",
+					""
+				],
+				[
+					"Packages/User/My-C++.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/User/My-C++.sublime-build",
+				""
+			]
 		]
 	],
 	"build_varint": "",
@@ -240,6 +244,8 @@
 	],
 	"file_history":
 	[
+		"/home/nlare/_code/cpp-Landau-Wang/landau-wang.cpp",
+		"/home/nlare/_code/tex-Alcom-quests/document.tex",
 		"/home/nlare/_code/java-YouTubeUploader/YouTubeUploader.sublime-project",
 		"/home/nlare/_code/tex-English-Q&A/Martyn-Q&A.tex",
 		"/home/nlare/_code/java-YouTubeUploader/com/uploader/AppGui.java",
@@ -248,7 +254,6 @@
 		"/home/nlare/_code/tex-guide_git_client_server/document.tex",
 		"/home/nlare/_code/tex-guide_rtorrent+rutorrent/document.tex",
 		"/home/nlare/_code/tex-guide_rsync/document.tex",
-		"/home/nlare/_code/tex-Alcom-quests/document.tex",
 		"/home/nlare/_code/cpp-Landau-Wang-omp-averaged/landau-wang-omp-test.cpp",
 		"/home/nlare/_code/tex-ClamAV/document.tex",
 		"/home/nlare/_code/tex-guide_NFS_commands/document.tex",
@@ -276,6 +281,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"DEBUG_G",
 			"it_count_g",
 			"rank",
 			"it_count_g",
@@ -311,67 +317,24 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/home/nlare/_code/cpp-Landau-Wang/landau-wang.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 16354,
-						"regions":
-						{
-							"bookmarks":
-							{
-								"flags": 144,
-								"icon": "bookmark",
-								"regions":
-								[
-									[
-										6602,
-										6602
-									]
-								],
-								"scope": "bookmarks"
-							}
-						},
-						"selection":
-						[
-							[
-								4764,
-								4764
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1690.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
 					"file": "landau-wang-omp-test.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 53441,
+						"buffer_size": 54057,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								469,
-								469
+								34986,
+								34986
 							]
 						],
 						"settings":
@@ -381,40 +344,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 78.0,
+						"translation.y": 12293.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/home/nlare/_code/tex-Alcom-quests/document.tex",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4972,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								617,
-								617
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/LaTeX/LaTeX.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 585.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
 					"type": "text"
 				}
 			]
@@ -459,7 +392,7 @@
 	{
 		"height": 0.0
 	},
-	"pinned_build_system": "",
+	"pinned_build_system": "Packages/User/My-C++.sublime-build",
 	"project": ".project.sublime-project",
 	"replace":
 	{

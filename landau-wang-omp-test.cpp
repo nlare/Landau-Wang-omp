@@ -891,9 +891,10 @@ int main(int argc, char *argv[])  {
         // }
 
         // std::cout << "TEST1!\n";
-
+        // for(int )
         for(int i = 0; i < top_b; i++)  {
-           div_averaging[i] = PP_I;
+           // div_averaging[i] = PP_I;
+           div_averaging[i] = 0;
         }
 
         for(int i = 0; i < 2*top_b; i++)    {
@@ -904,7 +905,7 @@ int main(int argc, char *argv[])  {
         // std::cout << "TEST2!\n";
 
         // std::cout << "overlap_interval_begin = " << overlap_interval_begin << "; overlap_interval_end = " << overlap_interval_end << std::endl;
-        #pragma omp flush(massive)
+        #pragma omp flush(massive, E_min, E_max)
 
         for(int i = 0; i < top_b; i++)  {
 
@@ -937,38 +938,52 @@ int main(int argc, char *argv[])  {
                      * Only for L = 8
                      * 
                      */
+                    if(PP_I == 2)   {
+                        
+                        if(rank == 0)   {   
 
-                    if(rank == 0)   {
+                            if(i <= overlap_interval_begin+2)    {
 
-                        if(i <= overlap_interval_begin+2)    {
+                                g_averaged[i] = massive[rank].g[i];
 
-                            g_averaged[i] = massive[rank].g[i];
+                            }
+
+                            if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
 
                         }
 
-                        if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
+                        if(rank == 1)   {
 
-                            g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+                            if(i >= overlap_interval_end)    {
+
+                                g_averaged[i] = massive[rank].g[i]; 
+
+                            }
+
+                            if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
 
                         }
 
                     }
 
-                    if(rank == 1)   {
+                    if(PP_I == 4)   {
+                        
+                        if((i >= E_min[rank]) && (i <= E_max[rank]))    {
 
-                        if(i >= overlap_interval_end)    {
-
-                            g_averaged[i] = massive[rank].g[i]; 
-
-                        }
-
-                        if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
-
-                            g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+                            div_averaging[i]++;
 
                         }
 
                     }
+
 
                     // g_averaged[i] = g_averaged[i] + massive[rank].g[i];
 
@@ -983,7 +998,7 @@ int main(int argc, char *argv[])  {
                     }   else    {
 
                         // g_averaged[i] -= 1;
-                        div_averaging[i] = 1;
+                        // div_averaging[i] = 1;
 
                     }
                 }
