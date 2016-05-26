@@ -976,14 +976,14 @@ int main(int argc, char *argv[])  {
 
                     if(PP_I == 4)   {
                         
-                        if((i >= E_min[rank]) && (i <= E_max[rank]))    {
+                        if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                             div_averaging[i]++;
+                            g_averaged[i] = g_averaged[i] + massive[rank].g[i];
 
                         }
 
                     }
-
 
                     // g_averaged[i] = g_averaged[i] + massive[rank].g[i];
 
@@ -1040,9 +1040,11 @@ int main(int argc, char *argv[])  {
                 #ifdef DEBUG_G
                 std::cout << "G0[" << i << "]=" << massive[0].g[i] \
                           << " :: G1[" << i << "]=" << massive[1].g[i] << ":: G2[" << i << "]=" << massive[2].g[i] \
-                          << ":: G3[" << i << "]=" << massive[2].g[i] << ":: G_AV[" << i << "]=" << g_averaged[i] << " :: HIST_AV[" << i << "]=" \
-                          << hist_averaged[i] << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;
+                          << ":: G3[" << i << "]=" << massive[2].g[i] << ":: G_AV[" << i << "]=" << g_averaged[i] \
+                          << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;
                 #endif 
+                          // << " :: HIST_AV[" << i << "]=" << hist_averaged[i]; \
+
             }
         }
 
