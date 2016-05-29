@@ -29,7 +29,7 @@
 #define COUT_EVERY_NUM_STEPS
 #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 8
+#define PP_I 16
 #define L 32
 
 // int neighbour_spins(int,int);
@@ -1126,6 +1126,180 @@ int main(int argc, char *argv[])  {
                         }                                                                        
 
                     }
+
+                    if(PP_I == 16)   {
+                        
+                        if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                            div_averaging[i]++;
+
+                            // g_averaged[i] = g_averaged[i] + massive[rank].g[i];
+
+                        }
+
+                        if(rank == 0)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 1)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 2)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 3)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 4)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 5)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 6)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 7)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }    
+
+                        if(rank == 8)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 9)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 10)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 11)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 12)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 13)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 14)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 15)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+
+                    }
+
 
                     // g_averaged[i] = g_averaged[i] + massive[rank].g[i];
 
