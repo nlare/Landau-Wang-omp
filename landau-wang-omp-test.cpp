@@ -25,11 +25,12 @@
 // #define E_MIN_E_MAX_OUT
 // #define COUT_IF_HIST_FLAT
 // #define CHECK_H_DELT
+// #define HIST_FLAT_OUT
 #define COUT_EVERY_NUM_STEPS
 #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 4
-#define L 16
+#define PP_I 8
+#define L 32
 
 // int neighbour_spins(int,int);
 
@@ -156,11 +157,12 @@ int main(int argc, char *argv[])  {
             massive[pp_i].hist[i] = 1.0;
         }
 
-        // for(int i = 0; i < L; i++)  {
-        //     for(int j = 0;j < L; j++)   {
-        //         if(rg.IRandom(0,10000.0)/10000.0 < 0.2) system_of[pp_i].defect[i][j] = true;
-        //     }
-        // }
+        for(int i = 0; i < L; i++)  {
+            for(int j = 0;j < L; j++)   {
+                // if(rg.IRandom(0,10000.0)/10000.0 < 0.2) system_of[pp_i].defect[i][j] = true;
+                system_of[pp_i].defect[i][j] = false;
+            }
+        }
     }
 
     if(L%2!=0) top_b=2*(L*(L-1))+1;
@@ -239,7 +241,7 @@ int main(int argc, char *argv[])  {
         mcs = 0;
         n = 0;
         // b = 0;
-        // #pragma omp flush
+        #pragma omp flush(b_last)
         // {
         b = b_last[pp_i];
 
@@ -320,11 +322,13 @@ int main(int argc, char *argv[])  {
                 // std::cout << "[" << omp_get_thread_num() << "]" << std::endl;
                 // {
                     // if(omp_get_thread_num() == 1)
-                    // std::cout << E_max[pp_i] << std::endl; 
+                    // std::cout << E_max[pp_i] << std::endl;
                     // std::cout << b_new << std::endl; 
                 // }
                 // #pragma omp flush
                 // {
+
+                #pragma omp flush(E_min, E_max)
                 if((b_new < E_max[pp_i]) && (b_new > E_min[pp_i] && system_of[pp_i].defect[i][j] == false))   {   // Если энергия в допустимых пределах
 
                     prob = exp(massive[pp_i].g[b]-massive[pp_i].g[b_new]);  // Вероятность принятия нового энергетического состояния
@@ -440,14 +444,12 @@ int main(int argc, char *argv[])  {
         mcs++;
         c++;
 
-        #pragma omp flush(E_min, E_max)
-
         // #pragma omp critical
         // {
         //     std::cout << "mcs[" << pp_i << "]:" << mcs << std::endl;
         // }
 
-        #pragma omp flush(massive)
+        #pragma omp flush(massive, E_min, E_max)
         // if(mcs == 5000 && pp_i == 0 && ln_f == 1)    {
         //     std::cout << "in cycle!\n";
         //     for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
@@ -638,11 +640,11 @@ int main(int argc, char *argv[])  {
 
             #endif
 
-            // int h_count = 0;
-            // double h_delt = 0.0;
-            // double h_sum = 0.0;
+            int h_count = 0;
+            double h_delt = 0.0;
+            double h_sum = 0.0;
 
-            // h_delt = 0.0;
+            h_delt = 0.0;
 
             // #pragma omp critical
 
@@ -654,9 +656,11 @@ int main(int argc, char *argv[])  {
             // for(int i = E_min[pp_i]; i < E_max[pp_i]; i++) {
 
             //     // if(massive[pp_i].hist[i] != 0)    {
-                
+            //     if(i%2 == 0)    {
+
             //         h_sum += (double)massive[pp_i].hist[i]/min_steps;
             //         h_count++;
+
             //     }
 
             // }
@@ -667,7 +671,7 @@ int main(int argc, char *argv[])  {
             // for (int i = E_min[pp_i]; i < E_max[pp_i]; i++)    {
             //     if(massive[pp_i].hist[i] != 0)    {
             //         h_delt = (massive[pp_i].hist[i]/(h_sum/h_count))/min_steps;
-            //         if((h_delt < flat_threshold) || (h_delt > 1+flat_threshold)) break;
+            //         if((h_delt < flat_threshold) || (h_delt > 1+flat_threshold)) count =1;
             //         // else count = 0;
 
             //         // if(h_delt < flat_threshold) {
@@ -682,6 +686,7 @@ int main(int argc, char *argv[])  {
             //     // }
             //     }
             // }
+
             // ---------------------------------
 
             // Новый вариант проверки на плоскость гистограммы основанный на среднеквадратичном отклонении
@@ -717,7 +722,7 @@ int main(int argc, char *argv[])  {
                 }
 
                 #pragma omp flush(massive)
-                std::cout << "min_hist = " << min_hist << std::endl;
+                // std::cout << "min_hist = " << min_hist << std::endl;
 
                 for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
 
@@ -745,9 +750,9 @@ int main(int argc, char *argv[])  {
                 // if(delta > 1+flat_threshold || delta < 1-flat_threshold) count = 1;
                 if(delta > flat_threshold) count = 1;
                 if(mcs >= 30000) count = 0;
-
+                #ifdef HIST_FLAT_OUT
                 std::cout << "hist2av = " << hist2av << "; histav2 = " << histav2 << "; hi_count = " << hi_count << "; delta = " << delta << std::endl;
-
+                #endif
 
             // ---------------------------------
 
@@ -892,10 +897,14 @@ int main(int argc, char *argv[])  {
 
         // std::cout << "TEST1!\n";
         // for(int )
+
         for(int i = 0; i < top_b; i++)  {
-           // div_averaging[i] = PP_I;
-           div_averaging[i] = 0;
+            if(PP_I == 2) div_averaging[i] = PP_I;
+            if(PP_I >= 4) div_averaging[i] = 0;
         }
+
+        div_averaging[0] = 1;
+        div_averaging[2] = 1;
 
         for(int i = 0; i < 2*top_b; i++)    {
             g_averaged[i] = 1.0;
@@ -976,12 +985,145 @@ int main(int argc, char *argv[])  {
 
                     if(PP_I == 4)   {
                         
-                        if((i > E_min[rank]) && (i < E_max[rank]))    {
+                        if((i > E_min[rank]+2) && (i < E_max[rank]))    {
 
                             div_averaging[i]++;
-                            g_averaged[i] = g_averaged[i] + massive[rank].g[i];
+
+                            // g_averaged[i] = g_averaged[i] + massive[rank].g[i];
 
                         }
+
+                        if(rank == 0)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 1)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 2)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 3)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                    }
+
+                    if(PP_I == 8)   {
+                        
+                        if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                            div_averaging[i]++;
+
+                            // g_averaged[i] = g_averaged[i] + massive[rank].g[i];
+
+                        }
+
+                        if(rank == 0)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 1)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 2)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 3)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 4)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 5)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 6)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }
+
+                        if(rank == 7)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+
+                                g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                            }
+
+                        }                                                                        
 
                     }
 
@@ -998,7 +1140,7 @@ int main(int argc, char *argv[])  {
                     }   else    {
 
                         // g_averaged[i] -= 1;
-                        // div_averaging[i] = 1;
+                        if(PP_I == 2) div_averaging[i] = 1;
 
                     }
                 }
@@ -1028,6 +1170,11 @@ int main(int argc, char *argv[])  {
             // std::cout << "Check1: g_averaged = " << g_averaged[0] << std::endl;
         // }
 
+        for(int rank = 0; rank < PP_I; rank++)  
+        std::cout << "E_min[" << rank << "]=" << E_min[rank] << "; E_max[" << rank << "]=" << E_max[rank] << std::endl;
+
+        std::cout << std::endl;
+
         for(int i = 0; i < top_b; i++)     {
             // if(hist_averaged[i]!=0)  {
             if(i%2 == 0 || i == 0)  {
@@ -1038,10 +1185,23 @@ int main(int argc, char *argv[])  {
 
                 // #define DEBUG_G
                 #ifdef DEBUG_G
-                std::cout << "G0[" << i << "]=" << massive[0].g[i] \
+                if(PP_I >= 4)   {
+
+                    std::cout << "G0[" << i << "]=" << massive[0].g[i] \
                           << " :: G1[" << i << "]=" << massive[1].g[i] << ":: G2[" << i << "]=" << massive[2].g[i] \
-                          << ":: G3[" << i << "]=" << massive[2].g[i] << ":: G_AV[" << i << "]=" << g_averaged[i] \
+                          << ":: G3[" << i << "]=" << massive[3].g[i] << ":: G_AV[" << i << "]=" << g_averaged[i] \
                           << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;
+
+                }
+
+                if(PP_I == 2)   {
+
+                    std::cout << "G0[" << i << "]=" << massive[0].g[i] \
+                          << " :: G1[" << i << "]=" << massive[1].g[i] \
+                          << ":: G_AV[" << i << "]=" << g_averaged[i]  \
+                          << " :: DIV:" << div_averaging[i] << " :: Count = " << count << std::endl;                    
+
+                }
                 #endif 
                           // << " :: HIST_AV[" << i << "]=" << hist_averaged[i]; \
 
@@ -1129,6 +1289,7 @@ int main(int argc, char *argv[])  {
             // massive[0].g[0] = 0.0;
             // g_averaged[0] = 0.0;
         // }
+        
         #pragma omp flush(massive)
 
         f = pow(f, 0.5);    // Изменяем множитель

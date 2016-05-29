@@ -119,7 +119,7 @@
 			"file": "landau-wang-omp-test.cpp",
 			"settings":
 			{
-				"buffer_size": 54057,
+				"buffer_size": 54839,
 				"line_ending": "Unix"
 			}
 		}
@@ -244,6 +244,7 @@
 	],
 	"file_history":
 	[
+		"/home/nlare/_code/tex-Alcom-pwd/document.tex",
 		"/home/nlare/_code/cpp-Landau-Wang/landau-wang.cpp",
 		"/home/nlare/_code/tex-Alcom-quests/document.tex",
 		"/home/nlare/_code/java-YouTubeUploader/YouTubeUploader.sublime-project",
@@ -281,6 +282,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"defect",
+			"min_hist",
 			"DEBUG_G",
 			"it_count_g",
 			"rank",
@@ -326,15 +329,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 54057,
+						"buffer_size": 54839,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								34986,
-								34986
+								34967,
+								34967
 							]
 						],
 						"settings":
@@ -344,7 +347,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 12917.0,
+						"translation.y": 12296.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
