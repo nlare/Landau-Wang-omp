@@ -368,7 +368,7 @@ int main(int argc, char *argv[])  {
         #pragma omp critical 
         {
         // Если первая итерация и mcs делится на 100 без остатка, то 
-        if(f == 2.7182818284 && mcs%100 == 0)   {
+        if(f == 2.7182818284 && mcs%100000 == 0)   {
         // if(omp_get_thread_num() == 0 && ln_f == 1)  {
 
                 // std::cout << "IN!" << std::endl;
