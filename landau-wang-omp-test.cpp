@@ -29,8 +29,10 @@
 #define COUT_EVERY_NUM_STEPS
 #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 16
+#define PP_I 4
 #define L 32
+#define DISABLE_FLAT_CRITERIA
+#define MAX_MCS_COUNT 100000
 
 // int neighbour_spins(int,int);
 
@@ -691,7 +693,8 @@ int main(int argc, char *argv[])  {
 
             // Новый вариант проверки на плоскость гистограммы основанный на среднеквадратичном отклонении
             // ---------------------------------
-
+            #ifndef DISABLE_FLAT_CRITERIA
+            {
                 #pragma omp flush(massive)
 
                 long double histav2 = 0.0; // Квадрат суммы
@@ -749,7 +752,11 @@ int main(int argc, char *argv[])  {
 
                 // if(delta > 1+flat_threshold || delta < 1-flat_threshold) count = 1;
                 if(delta > flat_threshold) count = 1;
-                if(mcs >= 30000) count = 0;
+            }
+            #endif
+
+                if(mcs >= MAX_MCS_COUNT) count = 0;
+                // else count = 1;
                 #ifdef HIST_FLAT_OUT
                 std::cout << "hist2av = " << hist2av << "; histav2 = " << histav2 << "; hi_count = " << hi_count << "; delta = " << delta << std::endl;
                 #endif
@@ -1505,6 +1512,40 @@ int main(int argc, char *argv[])  {
 
     }
 
+    if(PP_I == 8)    {
+
+        massive[0].g[top_b] = g_averaged[top_b];
+        massive[1].g[top_b] = g_averaged[top_b];
+        massive[2].g[top_b] = g_averaged[top_b];
+        massive[3].g[top_b] = g_averaged[top_b];
+        massive[4].g[top_b] = g_averaged[top_b];
+        massive[5].g[top_b] = g_averaged[top_b];
+        massive[6].g[top_b] = g_averaged[top_b];
+        massive[7].g[top_b] = g_averaged[top_b];
+
+    }
+
+    if(PP_I == 16)    {
+
+        massive[0].g[top_b] = g_averaged[top_b];
+        massive[1].g[top_b] = g_averaged[top_b];
+        massive[2].g[top_b] = g_averaged[top_b];
+        massive[3].g[top_b] = g_averaged[top_b];
+        massive[4].g[top_b] = g_averaged[top_b];
+        massive[5].g[top_b] = g_averaged[top_b];
+        massive[6].g[top_b] = g_averaged[top_b];
+        massive[7].g[top_b] = g_averaged[top_b];
+        massive[8].g[top_b] = g_averaged[top_b];
+        massive[9].g[top_b] = g_averaged[top_b];
+        massive[10].g[top_b] = g_averaged[top_b];
+        massive[11].g[top_b] = g_averaged[top_b];
+        massive[12].g[top_b] = g_averaged[top_b];
+        massive[13].g[top_b] = g_averaged[top_b];
+        massive[14].g[top_b] = g_averaged[top_b];
+        massive[15].g[top_b] = g_averaged[top_b];
+
+    }
+
     std::cout << "min_in_g[E] = " << min_in_ge << std::endl;
 
     // -------------- FOR READISTRIBUTED G[E] -----------------
@@ -1589,14 +1630,15 @@ int main(int argc, char *argv[])  {
         lambdatemp = 0;
 
         for(int i = 0; i < top_b; i++)  {
-            if((i!=0) && i%2 == 0 && (i!=L*L-1) && g_averaged[i]==g_averaged[i])    {
+            // if((i!=0) && i%2 == 0 && (i!=L*L-1) && g_averaged[i]==g_averaged[i])    {
+            if(i%2 == 0 && (i!=L*L-1))    {
                 lambdatemp = g_averaged[i] - energy(i)/T;
                 if(lambdatemp > lambda) lambda = lambdatemp;
             }
         }
 
         for(int i = 0; i < top_b; i++) {
-            if((i!=1) && i%2 == 0 && (i!=L*L-1) && g_averaged[i]==g_averaged[i])    {
+            if(i%2 == 0 && (i!=L*L-1))    {
                 EE += energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
                 EE2 += energy(i)*energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
                 GE += exp(g_averaged[i]-energy(i)/T-lambda);
@@ -1609,7 +1651,7 @@ int main(int argc, char *argv[])  {
         Ct = ((EE2/GE)-Ut*Ut)/(T*T);
 
         // if((Ut==Ut)==true&&(Ft==Ft)==true&&(St==St)==true&&(Ct==Ct)==true) // Не пишем NaN 
-        out_f_td << std::fixed << std::setprecision(4) << T << "\t" << Ut/(L*L) << "\t" << Ft/(L*L) << "\t" << St/(L*L) << "\t" << Ct/(L*L) << "\n";
+        out_f_td << std::fixed << std::setprecision(8) << T << "\t" << Ut/(L*L) << "\t" << Ft/(L*L) << "\t" << St/(L*L) << "\t" << Ct/(L*L) << "\n";
 
     }
 

@@ -4,11 +4,23 @@
 		"selected_items":
 		[
 			[
-				"E_m",
-				"E_max"
+				"g",
+				"g_averaged"
 			],
 			[
 				"E",
+				"E_min"
+			],
+			[
+				"EM",
+				"E_max"
+			],
+			[
+				"E_",
+				"E_min"
+			],
+			[
+				"E_m",
 				"E_max"
 			],
 			[
@@ -88,10 +100,6 @@
 				"it_count_g"
 			],
 			[
-				"E_",
-				"E_max"
-			],
-			[
 				"strin",
 				"stringstream"
 			],
@@ -119,7 +127,7 @@
 			"file": "landau-wang-omp-test.cpp",
 			"settings":
 			{
-				"buffer_size": 54839,
+				"buffer_size": 63282,
 				"line_ending": "Unix"
 			}
 		}
@@ -329,15 +337,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 54839,
+						"buffer_size": 63282,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								34967,
-								34967
+								40975,
+								40975
 							]
 						],
 						"settings":
@@ -347,7 +355,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 12296.0,
+						"translation.y": 15390.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
