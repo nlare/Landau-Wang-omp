@@ -27,10 +27,10 @@
 // #define CHECK_H_DELT
 // #define HIST_FLAT_OUT
 #define COUT_EVERY_NUM_STEPS
-#define REPLICAEXHANGE 
+// #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 4
-#define L 32
+#define L 16
 #define DISABLE_FLAT_CRITERIA
 #define MAX_MCS_COUNT 100000
 
@@ -1638,7 +1638,7 @@ int main(int argc, char *argv[])  {
         }
 
         for(int i = 0; i < top_b; i++) {
-            if(i%2 == 0 && (i!=L*L-1))    {
+            if(i != 1 && i%2 == 0 && (i!=L*L-1))    {
                 EE += energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
                 EE2 += energy(i)*energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
                 GE += exp(g_averaged[i]-energy(i)/T-lambda);
@@ -1648,7 +1648,7 @@ int main(int argc, char *argv[])  {
         Ut = EE/GE;
         Ft = -T*lambda-(T)*log(GE);
         St = (Ut-Ft)/T;
-        Ct = ((EE2/GE)-Ut*Ut)/(T*T);
+        Ct = ((EE2/GE)-(Ut*Ut))/(T*T);
 
         // if((Ut==Ut)==true&&(Ft==Ft)==true&&(St==St)==true&&(Ct==Ct)==true) // Не пишем NaN 
         out_f_td << std::fixed << std::setprecision(8) << T << "\t" << Ut/(L*L) << "\t" << Ft/(L*L) << "\t" << St/(L*L) << "\t" << Ct/(L*L) << "\n";
