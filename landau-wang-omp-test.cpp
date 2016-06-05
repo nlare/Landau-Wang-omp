@@ -32,7 +32,7 @@
 #define PP_I 4
 #define L 16
 #define DISABLE_FLAT_CRITERIA
-#define MAX_MCS_COUNT 100000
+#define MAX_MCS_COUNT 10000
 
 // int neighbour_spins(int,int);
 
@@ -1804,7 +1804,7 @@ int main(int argc, char *argv[])  {
     std::cout << "Time: " << time_e - time_b << "'s" << std::endl;
 
     ss.str("");
-    ss << "Time-" << L << "-PP-" << PP_I;
+    ss << "Time-" << L << "-PP-" << PP_I << "_MAXMCS=" << MAX_MCS_COUNT;
 
     time_f.open(ss.str().c_str());
 
