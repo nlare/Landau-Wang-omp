@@ -1595,7 +1595,7 @@ int main(int argc, char *argv[])  {
     char * filename_out_ds = new char [100];
 
     ss.str("");
-    ss << "results/TermodinamicalStat_L=" << L << "_PP=" << PP_I << ".dat";
+    ss << "results/TermodinamicalStat_L=" << L << "_PP=" << PP_I << "_MAXMCS=" << MAX_MCS_COUNT << ".dat";
 
     strcpy(filename_out_td ,ss.str().c_str());
 
@@ -1604,7 +1604,7 @@ int main(int argc, char *argv[])  {
     out_f_td << "T\tUt\tFt\tSt\tCt\n";
 
     ss.str("");
-    ss << "results/DensityStat_L=" << L << "_PP=" << PP_I << ".dat";
+    ss << "results/DensityStat_L=" << L << "_PP=" << PP_I << "_MAXMCS=" << MAX_MCS_COUNT << ".dat";
 
     strcpy(filename_out_ds, ss.str().c_str());
 
