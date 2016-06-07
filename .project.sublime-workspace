@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"omp",
+				"omp"
+			],
+			[
+				"L",
+				"L_C"
+			],
+			[
 				"end",
 				"endif"
 			],
@@ -92,10 +100,6 @@
 				"overlap"
 			],
 			[
-				"omp",
-				"omp_get_thread_num"
-			],
-			[
 				"div",
 				"div_averaging"
 			],
@@ -139,7 +143,7 @@
 			"file": "landau-wang-omp-test.cpp",
 			"settings":
 			{
-				"buffer_size": 64957,
+				"buffer_size": 64947,
 				"line_ending": "Unix"
 			}
 		},
@@ -147,7 +151,7 @@
 			"file": "/home/nlare/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
 			"settings":
 			{
-				"buffer_size": 263,
+				"buffer_size": 280,
 				"line_ending": "Unix"
 			}
 		},
@@ -156,6 +160,14 @@
 			"settings":
 			{
 				"buffer_size": 10528,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/nlare/_code/tex-guide_hotkeys/document.tex",
+			"settings":
+			{
+				"buffer_size": 1564,
 				"line_ending": "Unix"
 			}
 		},
@@ -276,7 +288,7 @@
 				"Preferences: Browse Packages"
 			]
 		],
-		"width": 820.0
+		"width": 457.0
 	},
 	"console":
 	{
@@ -382,7 +394,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -391,7 +403,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 64957,
+						"buffer_size": 64947,
 						"regions":
 						{
 							"bookmarks":
@@ -407,8 +419,8 @@
 						"selection":
 						[
 							[
-								8168,
-								8168
+								783,
+								783
 							]
 						],
 						"settings":
@@ -418,10 +430,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4095.0,
+						"translation.y": 195.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -430,7 +442,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 263,
+						"buffer_size": 280,
 						"regions":
 						{
 						},
@@ -450,7 +462,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -480,11 +492,41 @@
 						"translation.y": 91.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
+					"file": "/home/nlare/_code/tex-guide_hotkeys/document.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1564,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1469,
+								1469
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeX/LaTeX.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 130.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
 					"file": "Makefile",
 					"semi_transient": false,
 					"settings":
@@ -508,7 +550,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				}
 			]

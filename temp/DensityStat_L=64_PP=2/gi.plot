@@ -4,4 +4,4 @@ set output "graph/DensityStat_L=64_PP=2/gi.jpg"
 set grid x y
 set xlabel "i"
 set ylabel "g(i)"
-plot "results/DensityStat_L=64_PP=2.dat" using 1:3 title "landau-wang-omp-64" with lines lt rgb "red"
+plot "results/DensityStat_L=64_PP=2_MAXMCS=1000000.dat" using 1:3 title "landau-wang-omp-64" with lines lt rgb "red"

@@ -29,10 +29,10 @@
 #define COUT_EVERY_NUM_STEPS
 // #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 2
-#define L 16
+#define PP_I 4
+#define L 128
 #define DISABLE_FLAT_CRITERIA
-#define MAX_MCS_COUNT 10000
+#define MAX_MCS_COUNT 1000000
 
 // int neighbour_spins(int,int);
 
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])  {
     double g_normalized[4*L*L];
 
     std::cout << "adding hist_averaged massive\n";
-    double  hist_averaged[4*2*L*L];
+    double hist_averaged[4*2*L*L];
 
     CRandomMersenne rg(13617235);
 
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])  {
     skip = 10000;
     flat_threshold = 0.8;
     // overlap = 0.75;
-    overlap = 0.85;
+    overlap = 0.95;
     h = 1;
 
     it_count_av = 0;
