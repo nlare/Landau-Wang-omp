@@ -20,7 +20,7 @@
 #include "mersenne.cpp"
 
 #define DEBUG
-#define DEBUG_G
+// #define DEBUG_G
 // #define DEBUG_H_SUM_G_SUM
 // #define E_MIN_E_MAX_OUT
 // #define COUT_IF_HIST_FLAT
@@ -29,14 +29,14 @@
 #define COUT_EVERY_NUM_STEPS
 // #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 4
+#define PP_I 2
 #define L 16
 #define DISABLE_FLAT_CRITERIA
 #define MAX_MCS_COUNT 10000
 
 // int neighbour_spins(int,int);
 
- int MakeScriptsForAnimation(std::string);
+int MakeScriptsForAnimation(std::string);
 
 int main(int argc, char *argv[])  {
 
@@ -58,6 +58,7 @@ int main(int argc, char *argv[])  {
     int h;
     int *E_min, *E_max;
     int *b_last;
+    // int L = 16;
 
     // int count;
     double buffer; // Переменная для сохранения g(i) текущей реплики
@@ -87,14 +88,13 @@ int main(int argc, char *argv[])  {
     ss << "test_g";
     boost::filesystem::create_directories(ss.str().c_str());
 
-
     f = 2.7182818284;  // В работе Ландау-Ванга было указано значение "f" равное экспоненте 
     f_min = 1.000001;  // Данная переменная должна быть около единицы
     min_steps = 10000;
     skip = 10000;
     flat_threshold = 0.8;
     // overlap = 0.75;
-    overlap = 0.95;
+    overlap = 0.85;
     h = 1;
 
     it_count_av = 0;
@@ -232,6 +232,13 @@ int main(int argc, char *argv[])  {
         int c = skip+1;
         double prob;    // Вероятность изменения энергетического уровня
 
+        int L_C = L*overlap;
+
+        if(L_C%2!=0) L_C+=1;
+
+        // #pragma omp critical
+        // std::cout << "L_C = " << L_C << std::endl;
+
         int global_it_count = 0;
 
         // int E_diff = E_max[pp_i] - E_min[pp_i];
@@ -264,7 +271,7 @@ int main(int argc, char *argv[])  {
         // }
 
         // if(omp_get_thread_num()==0)
-        #pragma omp critical
+        // #pragma omp critical
         // std::cout << "b = " << b << "\t, sum_spins = " << sum_spins << "\t, rank = " << pp_i << std::endl;
 
         // }
@@ -295,15 +302,13 @@ int main(int argc, char *argv[])  {
             // goto m3;
         // }
 
-        for(int i = 0; i < L; i++)   {
-            for(int j = 0; j < L; j++)  {
+        for(int i = 0; i < L_C; i++)   {
+            for(int j = 0; j < L_C; j++)  {
                 m1:
                 int ci = Mersenne.IRandom(0, L-1);
                 int cj = Mersenne.IRandom(0, L-1);
 
                 // if(system_of[pp_i].defect[ci][cj] == false) goto m1;  // Исключаем немагнитные спины
-
-                // int L_C = L*overlap;
 
                 int neighbour_spins = 0;
                 #pragma omp flush(system_of)
@@ -870,10 +875,10 @@ int main(int argc, char *argv[])  {
 
         }
 
-        #pragma omp critical
-        std::cout << "-----------------------------\n";
-        std::cout << "#" << pp_i << ": mcs = " << mcs << " IS FLAT" << std::endl; 
-        std::cout << "-----------------------------\n";
+        // #pragma omp critical
+        // std::cout << "-----------------------------\n";
+        // std::cout << "#" << pp_i << ": mcs = " << mcs << " IS FLAT" << std::endl; 
+        // std::cout << "-----------------------------\n";
 
         }
 
@@ -1340,7 +1345,6 @@ int main(int argc, char *argv[])  {
             }   
         }
 
-
         std::cout << std::endl;
 
         int count = 0;
@@ -1351,13 +1355,19 @@ int main(int argc, char *argv[])  {
             // std::cout << "Check1: g_averaged = " << g_averaged[0] << std::endl;
         // }
 
-        for(int rank = 0; rank < PP_I; rank++)  
-        std::cout << "E_min[" << rank << "]=" << E_min[rank] << "; E_max[" << rank << "]=" << E_max[rank] << std::endl;
+        for(int rank = 0; rank < PP_I; rank++)     {
 
-        std::cout << std::endl;
+        #ifdef E_MIN_E_MAX_OUT  
+        {
+            std::cout << "E_min[" << rank << "]=" << E_min[rank] << "; E_max[" << rank << "]=" << E_max[rank] << std::endl;
+            std::cout << std::endl;
+        }
+        #endif
+
+        }
 
         for(int i = 0; i < top_b; i++)     {
-            // if(hist_averaged[i]!=0)  {
+
             if(i%2 == 0 || i == 0)  {
 
                 count++;
@@ -1384,7 +1394,6 @@ int main(int argc, char *argv[])  {
 
                 }
                 #endif 
-                          // << " :: HIST_AV[" << i << "]=" << hist_averaged[i]; \
 
             }
         }
