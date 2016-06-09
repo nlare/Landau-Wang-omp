@@ -30,7 +30,7 @@
 // #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 4
-#define L 16
+#define L 8
 #define DISABLE_FLAT_CRITERIA
 #define MAX_MCS_COUNT 10000
 
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])  {
 
     }   system_of[PP_I];
 
-    top_b=L*L*L;
+    // top_b=L*L*L;
 
     struct _massive   {
         
@@ -310,11 +310,11 @@ int main(int argc, char *argv[])  {
             for(int j = 0; j < L; j++)  {
             	for(int k = 0; k < L; k++)  {
                 m1:
-                int ci = Mersenne.IRandom(0, L-1);
-                int cj = Mersenne.IRandom(0, L-1);
-                int ck = Mersenne.IRandom(0, L-1);
+                int ci = Mersenne.IRandom(0, L);
+                int cj = Mersenne.IRandom(0, L);
+                int ck = Mersenne.IRandom(0, L);
 
-                // if(system_of[pp_i].defect[ci][cj] == false) goto m1;  // Исключаем немагнитные спины
+                if(system_of[pp_i].defect[ci][cj] == false) goto m1;  // Исключаем немагнитные спины
 
                 int neighbour_spins = 0;
                 #pragma omp flush(system_of)
@@ -346,7 +346,7 @@ int main(int argc, char *argv[])  {
                 // {
 
                 #pragma omp flush(E_min, E_max)
-                if((b_new < E_max[pp_i]) && (b_new > E_min[pp_i] && system_of[pp_i].defect[i][j][k] == false))   {   // Если энергия в допустимых пределах
+                if((b_new < E_max[pp_i]) && (b_new > E_min[pp_i]) && system_of[pp_i].defect[i][j][k] == false)   {   // Если энергия в допустимых пределах
 
                     prob = exp(massive[pp_i].g[b]-massive[pp_i].g[b_new]);  // Вероятность принятия нового энергетического состояния
                     // prob = massive[pp_i].g[b]/massive[pp_i].g[b_new];
@@ -371,6 +371,13 @@ int main(int argc, char *argv[])  {
                     //     std::cout << "RUN IN ONE!" << std::endl;
                         // std::cout << "massive[" << pp_i << "].g[" << b << "]=" << massive[pp_i].g[b] << std::endl;
                     // }
+
+                    // if(omp_get_thread_num()==0) {
+
+                        // std::cout << "massive[0].g[8]=" << massive[0].g[8] << std::endl;
+
+                    // }
+
                     n++;
                 }
               }
@@ -407,7 +414,7 @@ int main(int argc, char *argv[])  {
                 test_g_f.open(ss.str().c_str());
     
                 for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
-                    if((i!=2*E_max[pp_i]-1) && (massive[pp_i].hist[i] != 0))    {
+                    if((i!=2*E_max[pp_i]-1) && i%2==0)    {
                         // test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[pp_i].g[i] << "\n";
                         test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[pp_i].hist[i] << "\n";
                         // std::cout << "massive.g[" << i << "]=" << massive[pp_i].g[i] << std::endl;
@@ -730,7 +737,7 @@ int main(int argc, char *argv[])  {
 
                 for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
                     
-                    if(i%2 == 0 && min_hist > massive[pp_i].hist[i] && massive[pp_i].hist[i] > 0)    {
+                    if(i%2 == 0 && (min_hist > massive[pp_i].hist[i]) && massive[pp_i].hist[i] > 0)    {
 
                         min_hist = massive[pp_i].hist[i];
 
@@ -830,7 +837,7 @@ int main(int argc, char *argv[])  {
 
         for(int i = E_min[rank]; i < E_max[rank]; i++)  {
             // if((i!=2*E_max[pp_i]-1) && (massive[pp_i].hist[i] != 0))    {
-            if((i!=2*E_max[rank]-1) && (i%2 != 0))    {
+            if((i!=2*E_max[rank]-1) && (i%2 == 0))    {
             // if(((i!=2*E_max[pp_i]-1) && i%2 == 0) || i == 0)    {
                 // test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[pp_i].g[i] << "\n";
                 test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << massive[rank].g[i] << "\n";
@@ -925,7 +932,8 @@ int main(int argc, char *argv[])  {
         }
 
         div_averaging[0] = 1;
-        div_averaging[2] = 1;
+        // div_averaging[2] = 1;
+        // div_averaging[4] = 1;
 
         for(int i = 0; i < 2*top_b; i++)    {
             g_averaged[i] = 1.0;
@@ -972,13 +980,13 @@ int main(int argc, char *argv[])  {
                         
                         if(rank == 0)   {   
 
-                            if(i <= overlap_interval_begin+2)    {
+                            if(i <= overlap_interval_begin)    {
 
                                 g_averaged[i] = massive[rank].g[i];
 
                             }
 
-                            if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
+                            if((i > overlap_interval_begin) && i < overlap_interval_end)    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -994,7 +1002,7 @@ int main(int argc, char *argv[])  {
 
                             }
 
-                            if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
+                            if((i > overlap_interval_begin) && i < overlap_interval_end)    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1006,7 +1014,7 @@ int main(int argc, char *argv[])  {
 
                     if(PP_I == 4)   {
                         
-                        if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                        if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                             div_averaging[i]++;
 
@@ -1016,7 +1024,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 0)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1026,7 +1034,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 1)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1036,7 +1044,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 2)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1046,7 +1054,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 3)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1058,7 +1066,7 @@ int main(int argc, char *argv[])  {
 
                     if(PP_I == 8)   {
                         
-                        if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                        if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                             div_averaging[i]++;
 
@@ -1068,7 +1076,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 0)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1078,7 +1086,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 1)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1088,7 +1096,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 2)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1098,7 +1106,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 3)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1108,7 +1116,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 4)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1118,7 +1126,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 5)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1128,7 +1136,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 6)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1138,7 +1146,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 7)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1150,7 +1158,7 @@ int main(int argc, char *argv[])  {
 
                     if(PP_I == 16)   {
                         
-                        if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                        if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                             div_averaging[i]++;
 
@@ -1160,7 +1168,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 0)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1170,7 +1178,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 1)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1180,7 +1188,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 2)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1190,7 +1198,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 3)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1200,7 +1208,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 4)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1210,7 +1218,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 5)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1220,7 +1228,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 6)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1230,7 +1238,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 7)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1240,7 +1248,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 8)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1250,7 +1258,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 9)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1260,7 +1268,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 10)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1270,7 +1278,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 11)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1280,7 +1288,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 12)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1290,7 +1298,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 13)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1300,7 +1308,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 14)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1310,7 +1318,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 15)   {
 
-                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1328,7 +1336,7 @@ int main(int argc, char *argv[])  {
                     // -------------- AVERAGING ALL REPLICAS G[E] ----------------
                     // if(f == 2.7182818284)    
 
-                    if(i > overlap_interval_begin+2 && i < overlap_interval_end)  {
+                    if(i > overlap_interval_begin && i < overlap_interval_end)  {
 
 
                         // ...
