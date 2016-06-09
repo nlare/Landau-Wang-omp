@@ -32,7 +32,7 @@
 #define PP_I 4
 #define L 16
 #define DISABLE_FLAT_CRITERIA
-#define MAX_MCS_COUNT 1000000
+#define MAX_MCS_COUNT 10000
 
 // int neighbour_spins(int,int);
 
@@ -69,13 +69,13 @@ int main(int argc, char *argv[])  {
     int overlap_interval_begin, overlap_interval_end;
 
     std::cout << "adding g_averaged massive\n";
-    double g_averaged[4*L*L];
+    double g_averaged[4*L*L*L];
 
     std::cout << "adding g_normalized massive\n";
-    double g_normalized[4*L*L];
+    double g_normalized[4*L*L*L];
 
     std::cout << "adding hist_averaged massive\n";
-    double hist_averaged[4*2*L*L];
+    double hist_averaged[4*2*L*L*L];
 
     CRandomMersenne rg(13617235);
 
@@ -111,21 +111,21 @@ int main(int argc, char *argv[])  {
 
     struct _spins   {
     
-        int spin[L][L];
-        bool defect[L][L];
+        int spin[L][L][L];
+        bool defect[L][L][L];
 
     }   system_of[PP_I];
 
-    top_b=L*L;
+    top_b=L*L*L;
 
     struct _massive   {
         
-        double g[4*L*L];
-        int hist[4*L*L];
+        double g[4*L*L*L];
+        int hist[4*L*L*L];
 
     }   massive[PP_I];
 
-    for(int i = 0; i <= 2*L*L; i++)    {
+    for(int i = 0; i <= 2*L*L*L; i++)    {
         g_averaged[i] = 0.0;
     }
 
@@ -138,7 +138,9 @@ int main(int argc, char *argv[])  {
      
         for(int i = 0; i < L; i++)    {
             for(int j = 0; j < L; j++)    {
-                system_of[pp_i].spin[i][j] = 1;
+            	for(int k = 0; k < L; k++)	 {
+                	system_of[pp_i].spin[i][j][k] = 1;
+				}
             }
         }
 
@@ -151,24 +153,26 @@ int main(int argc, char *argv[])  {
         //     }
         // }
 
-        for(int i = 0; i <= 2*L*L; i++)    {
+        for(int i = 0; i <= 2*L*L*L; i++)    {
             massive[pp_i].g[i] = 1.0;
         }
 
-        for(int i = 0; i <= 2*L*L; i++)    {
+        for(int i = 0; i <= 2*L*L*L; i++)    {
             massive[pp_i].hist[i] = 1.0;
         }
 
         for(int i = 0; i < L; i++)  {
             for(int j = 0;j < L; j++)   {
+            	for(int k = 0;k < L; k++)   {
                 // if(rg.IRandom(0,10000.0)/10000.0 < 0.2) system_of[pp_i].defect[i][j] = true;
-                system_of[pp_i].defect[i][j] = false;
+                	system_of[pp_i].defect[i][j][k] = false;
+				}
             }
         }
     }
 
-    if(L%2!=0) top_b=2*(L*(L-1))+1;
-    else top_b=2*(L*L);
+    if(L%2!=0) top_b=2*(L*L*(L-1))+1;
+    else top_b=2*(L*L*L);
 
     E_min = new int [PP_I];
     E_max = new int [PP_I];
@@ -302,27 +306,33 @@ int main(int argc, char *argv[])  {
             // goto m3;
         // }
 
-        for(int i = 0; i < L_C; i++)   {
-            for(int j = 0; j < L_C; j++)  {
+        for(int i = 0; i < L; i++)   {
+            for(int j = 0; j < L; j++)  {
+            	for(int k = 0; k < L; k++)  {
                 m1:
                 int ci = Mersenne.IRandom(0, L-1);
                 int cj = Mersenne.IRandom(0, L-1);
+                int ck = Mersenne.IRandom(0, L-1);
 
                 // if(system_of[pp_i].defect[ci][cj] == false) goto m1;  // Исключаем немагнитные спины
 
                 int neighbour_spins = 0;
                 #pragma omp flush(system_of)
-                if(ci==0)   neighbour_spins=system_of[pp_i].spin[L-1][cj];
-                else        neighbour_spins=system_of[pp_i].spin[ci-1][cj];
-                if(ci==L-1) neighbour_spins+=system_of[pp_i].spin[0][cj];
-                else        neighbour_spins+=system_of[pp_i].spin[ci+1][cj];
-                if(cj==0)   neighbour_spins+=system_of[pp_i].spin[ci][L-1];
-                else        neighbour_spins+=system_of[pp_i].spin[ci][cj-1];
-                if(cj==L-1) neighbour_spins+=system_of[pp_i].spin[ci][0];
-                else        neighbour_spins+=system_of[pp_i].spin[ci][cj+1];
+                if(ci==0)   neighbour_spins=system_of[pp_i].spin[L-1][cj][ck];
+                else        neighbour_spins=system_of[pp_i].spin[ci-1][cj][ck];
+                if(ci==L-1) neighbour_spins+=system_of[pp_i].spin[0][cj][ck];
+                else        neighbour_spins+=system_of[pp_i].spin[ci+1][cj][ck];
+                if(cj==0)   neighbour_spins+=system_of[pp_i].spin[ci][L-1][ck];
+                else        neighbour_spins+=system_of[pp_i].spin[ci][cj-1][ck];
+                if(cj==L-1) neighbour_spins+=system_of[pp_i].spin[ci][0][ck];
+                else        neighbour_spins+=system_of[pp_i].spin[ci][cj+1][ck];
+                if(ck==0)   neighbour_spins+=system_of[pp_i].spin[ci][cj][L-1];
+                else        neighbour_spins+=system_of[pp_i].spin[ci][cj][ck-1];
+                if(ck==L-1) neighbour_spins+=system_of[pp_i].spin[ci][cj][0];
+                else        neighbour_spins+=system_of[pp_i].spin[ci][cj][ck+1];
 
                 // #pragma omp flush(system_of)
-                b_new = b + system_of[pp_i].spin[ci][cj]*neighbour_spins;   // Считаем новое состояние
+                b_new = b + system_of[pp_i].spin[ci][cj][ck]*neighbour_spins;   // Считаем новое состояние
 
                 // std::cout << "b_new = " << b_new << std::endl;
                 // #pragma omp critical
@@ -336,7 +346,7 @@ int main(int argc, char *argv[])  {
                 // {
 
                 #pragma omp flush(E_min, E_max)
-                if((b_new < E_max[pp_i]) && (b_new > E_min[pp_i] && system_of[pp_i].defect[i][j] == false))   {   // Если энергия в допустимых пределах
+                if((b_new < E_max[pp_i]) && (b_new > E_min[pp_i] && system_of[pp_i].defect[i][j][k] == false))   {   // Если энергия в допустимых пределах
 
                     prob = exp(massive[pp_i].g[b]-massive[pp_i].g[b_new]);  // Вероятность принятия нового энергетического состояния
                     // prob = massive[pp_i].g[b]/massive[pp_i].g[b_new];
@@ -348,7 +358,7 @@ int main(int argc, char *argv[])  {
                         b = b_new;
                         // #pragma omp flush(system_of)
                         // #pragma omp critical
-                        system_of[pp_i].spin[ci][cj] *= -1;
+                        system_of[pp_i].spin[ci][cj][ck] *= -1;
 
                     }
                     
@@ -363,9 +373,8 @@ int main(int argc, char *argv[])  {
                     // }
                     n++;
                 }
-
-                // }
-            }
+              }
+           }
         }
 
         // count++;
