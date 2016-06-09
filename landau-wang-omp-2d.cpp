@@ -29,10 +29,10 @@
 #define COUT_EVERY_NUM_STEPS
 // #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 4
+#define PP_I 8
 #define L 16
 #define DISABLE_FLAT_CRITERIA
-#define MAX_MCS_COUNT 1000000
+#define MAX_MCS_COUNT 100000
 
 // int neighbour_spins(int,int);
 
@@ -302,8 +302,8 @@ int main(int argc, char *argv[])  {
             // goto m3;
         // }
 
-        for(int i = 0; i < L_C; i++)   {
-            for(int j = 0; j < L_C; j++)  {
+        for(int i = 0; i < L; i++)   {
+            for(int j = 0; j < L; j++)  {
                 m1:
                 int ci = Mersenne.IRandom(0, L-1);
                 int cj = Mersenne.IRandom(0, L-1);
@@ -336,7 +336,7 @@ int main(int argc, char *argv[])  {
                 // {
 
                 #pragma omp flush(E_min, E_max)
-                if((b_new < E_max[pp_i]) && (b_new > E_min[pp_i] && system_of[pp_i].defect[i][j] == false))   {   // Если энергия в допустимых пределах
+                if((b_new < E_max[pp_i]) && (b_new > E_min[pp_i]) && system_of[pp_i].defect[i][j] == false)   {   // Если энергия в допустимых пределах
 
                     prob = exp(massive[pp_i].g[b]-massive[pp_i].g[b_new]);  // Вероятность принятия нового энергетического состояния
                     // prob = massive[pp_i].g[b]/massive[pp_i].g[b_new];
@@ -1005,6 +1005,9 @@ int main(int argc, char *argv[])  {
 
                         }
 
+                    
+                        // g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
                         if(rank == 0)   {
 
                             if((i > E_min[rank]+2) && (i < E_max[rank]))    {
@@ -1319,7 +1322,7 @@ int main(int argc, char *argv[])  {
                     // -------------- AVERAGING ALL REPLICAS G[E] ----------------
                     // if(f == 2.7182818284)    
 
-                    if(i > overlap_interval_begin+2 && i < overlap_interval_end)  {
+                    if(i > overlap_interval_begin && i < overlap_interval_end)  {
 
 
                         // ...

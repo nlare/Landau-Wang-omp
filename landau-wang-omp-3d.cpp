@@ -20,7 +20,7 @@
 #include "mersenne.cpp"
 
 #define DEBUG
-// #define DEBUG_G
+#define DEBUG_G
 // #define DEBUG_H_SUM_G_SUM
 // #define E_MIN_E_MAX_OUT
 // #define COUT_IF_HIST_FLAT
@@ -32,7 +32,7 @@
 #define PP_I 4
 #define L 8
 #define DISABLE_FLAT_CRITERIA
-#define MAX_MCS_COUNT 10000
+#define MAX_MCS_COUNT 100000
 
 // int neighbour_spins(int,int);
 
@@ -310,9 +310,9 @@ int main(int argc, char *argv[])  {
             for(int j = 0; j < L; j++)  {
             	for(int k = 0; k < L; k++)  {
                 m1:
-                int ci = Mersenne.IRandom(0, L);
-                int cj = Mersenne.IRandom(0, L);
-                int ck = Mersenne.IRandom(0, L);
+                int ci = Mersenne.IRandom(0, L-1);
+                int cj = Mersenne.IRandom(0, L-1);
+                int ck = Mersenne.IRandom(0, L-1);
 
                 if(system_of[pp_i].defect[ci][cj] == false) goto m1;  // Исключаем немагнитные спины
 
@@ -383,6 +383,8 @@ int main(int argc, char *argv[])  {
               }
            }
         }
+
+        massive[pp_i].g[E_min[pp_i]+8] = massive[pp_i].g[E_min[pp_i]+6];
 
         // count++;
 
@@ -932,8 +934,8 @@ int main(int argc, char *argv[])  {
         }
 
         div_averaging[0] = 1;
-        // div_averaging[2] = 1;
-        // div_averaging[4] = 1;
+        div_averaging[2] = 1;
+        div_averaging[4] = 1;
 
         for(int i = 0; i < 2*top_b; i++)    {
             g_averaged[i] = 1.0;
@@ -980,13 +982,13 @@ int main(int argc, char *argv[])  {
                         
                         if(rank == 0)   {   
 
-                            if(i <= overlap_interval_begin)    {
+                            if(i <= overlap_interval_begin+4)    {
 
                                 g_averaged[i] = massive[rank].g[i];
 
                             }
 
-                            if((i > overlap_interval_begin) && i < overlap_interval_end)    {
+                            if((i > overlap_interval_begin+4) && i < overlap_interval_end)    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1002,7 +1004,7 @@ int main(int argc, char *argv[])  {
 
                             }
 
-                            if((i > overlap_interval_begin) && i < overlap_interval_end)    {
+                            if((i > overlap_interval_begin+4) && i < overlap_interval_end)    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1014,7 +1016,7 @@ int main(int argc, char *argv[])  {
 
                     if(PP_I == 4)   {
                         
-                        if((i > E_min[rank]) && (i < E_max[rank]))    {
+                        if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                             div_averaging[i]++;
 
@@ -1024,7 +1026,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 0)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1034,7 +1036,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 1)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1044,7 +1046,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 2)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1054,7 +1056,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 3)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1066,7 +1068,7 @@ int main(int argc, char *argv[])  {
 
                     if(PP_I == 8)   {
                         
-                        if((i > E_min[rank]) && (i < E_max[rank]))    {
+                        if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                             div_averaging[i]++;
 
@@ -1076,7 +1078,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 0)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1086,7 +1088,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 1)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1096,7 +1098,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 2)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1106,7 +1108,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 3)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1116,7 +1118,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 4)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1126,7 +1128,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 5)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1136,7 +1138,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 6)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1146,7 +1148,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 7)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1158,7 +1160,7 @@ int main(int argc, char *argv[])  {
 
                     if(PP_I == 16)   {
                         
-                        if((i > E_min[rank]) && (i < E_max[rank]))    {
+                        if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                             div_averaging[i]++;
 
@@ -1168,7 +1170,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 0)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1178,7 +1180,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 1)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1188,7 +1190,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 2)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1198,7 +1200,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 3)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1208,7 +1210,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 4)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1218,7 +1220,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 5)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1228,7 +1230,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 6)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1238,7 +1240,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 7)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1248,7 +1250,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 8)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1258,7 +1260,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 9)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1268,7 +1270,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 10)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1278,7 +1280,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 11)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1288,7 +1290,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 12)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1298,7 +1300,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 13)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1308,7 +1310,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 14)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1318,7 +1320,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 15)   {
 
-                            if((i > E_min[rank]) && (i < E_max[rank]))    {
+                            if((i > E_min[rank]+4) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1425,7 +1427,7 @@ int main(int argc, char *argv[])  {
         it_count_av++;
 
         ss.str("");
-        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-AV";
+        ss << "test_g/DoS-L=" << "3D_" << L << "_PP=" << PP_I << "-AV";
         boost::filesystem::create_directories(ss.str().c_str());
 
         ss << "/" << it_count_av << ".dat";
@@ -1444,23 +1446,23 @@ int main(int argc, char *argv[])  {
         test_g_f.close();
 
         ss.str("");
-        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-AV" << "/temp";
+        ss << "test_g/DoS-L=" << "3D_" << L << "_PP=" << PP_I << "-AV" << "/temp";
         boost::filesystem::create_directories(ss.str().c_str());
 
         ss.str("");
-        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-AV" << "/temp/" << it_count_av << ".plot";
+        ss << "test_g/DoS-" << "3D_" << "L=" << L << "_PP=" << PP_I << "-AV" << "/temp/" << it_count_av << ".plot";
         graph_g_f.open(ss.str().c_str());
 
         ss.str("");
-        ss << "test_g/DoS-L=" << L << "_PP=" << PP_I << "-AV" << "/graphs";
+        ss << "test_g/DoS-L=" << "3D_" << L << "_PP=" << PP_I << "-AV" << "/graphs";
         boost::filesystem::create_directories(ss.str().c_str());
 
         ss.str("");
-        ss << "test_g/DoS-" << "L=" << L << "_PP=" << PP_I << "-AV" << "/" << it_count_av << ".dat";
+        ss << "test_g/DoS-" << "3D_" << "L=" << L << "_PP=" << PP_I << "-AV" << "/" << it_count_av << ".dat";
 
         graph_g_f << "#!/usr/bin/gnuplot -persist\n" << \
                  "set terminal jpeg font arial 12 size 800,600\n" << \
-                 "set output \"test_g/DoS-L=" << L << "_PP=" << PP_I << "-AV" << "/graphs/" << it_count_av << ".jpg\"\n" << \
+                 "set output \"test_g/DoS-L=" << "3D_" << L << "_PP=" << PP_I << "-AV" << "/graphs/" << it_count_av << ".jpg\"\n" << \
                  "set grid x y\n" << \
                  "set xlabel \"i\"\n" << \
                  "set ylabel \"G(i)\"\n" << \
@@ -1510,17 +1512,18 @@ int main(int argc, char *argv[])  {
 
     #pragma omp flush(massive)
 
-    min_in_ge = g_averaged[4]; // index may be anything (not L*L)
+    min_in_ge = g_averaged[6]; // index may be anything (not L*L)
 
     for(int i = 0; i < top_b; i++)  {
         // if(hist_averaged[i]!=0)  {
-        if(i%2 == 0 && i >= 4 && g_averaged[i] != 1.0)  {
+        if(i%2 == 0 && i > 4 && g_averaged[i] != 1.0)  {
             if(g_averaged[i] < min_in_ge)
             min_in_ge = g_averaged[i];
         }
     }
 
-    g_averaged[top_b] = min_in_ge;
+    // g_averaged[top_b] = min_in_ge;
+    g_averaged[top_b] = g_averaged[top_b-2];
 
     if(PP_I == 2)    {
 
@@ -1587,16 +1590,18 @@ int main(int argc, char *argv[])  {
     // }
     // -------------- FOR AVERAGED G[E] ----------------- 
 
+
+
     for(int i = 0; i <= top_b; i++)  {
         
-        if(i%2 == 0 && i > 2)   {
+        if(i%2 == 0 && i > 4)   {
             g_normalized[i] = g_averaged[i] - min_in_ge;
         }
         // g_averaged[i]/=div_averaging[i];
         // if(g_averaged[i] > 1.0)
         // if(L == 8)  {
             // if(massive[0].hist[i]!=0 || massive[ 1].hist[i]!=0)
-            if(i%2 == 0 && i > 2)   {
+            if(i%2 == 0 && i > 4)   {
             std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] \
                       << ":\t" << massive[0].g[i] << "\t" << massive[1].g[i] << "\t" \
                       << g_normalized[i] << std::endl;
@@ -1621,7 +1626,7 @@ int main(int argc, char *argv[])  {
     char * filename_out_ds = new char [100];
 
     ss.str("");
-    ss << "results/TermodinamicalStat_L=" << L << "_PP=" << PP_I << "_MAXMCS=" << MAX_MCS_COUNT << ".dat";
+    ss << "results/TermodinamicalStat_L=" << "3D_" << L << "_PP=" << PP_I << "_MAXMCS=" << MAX_MCS_COUNT << ".dat";
 
     strcpy(filename_out_td ,ss.str().c_str());
 
@@ -1630,7 +1635,7 @@ int main(int argc, char *argv[])  {
     out_f_td << "T\tUt\tFt\tSt\tCt\n";
 
     ss.str("");
-    ss << "results/DensityStat_L=" << L << "_PP=" << PP_I << "_MAXMCS=" << MAX_MCS_COUNT << ".dat";
+    ss << "results/DensityStat_L=" << "3D_" << L << "_PP=" << PP_I << "_MAXMCS=" << MAX_MCS_COUNT << ".dat";
 
     strcpy(filename_out_ds, ss.str().c_str());
 
@@ -1689,12 +1694,12 @@ int main(int argc, char *argv[])  {
     }
 
     ss.str("");
-    ss << "temp/TermodinamicalStat_L=" << L << "_PP=" << PP_I;
+    ss << "temp/TermodinamicalStat_L=" << "3D_" << L << "_PP=" << PP_I;
 
     boost::filesystem::create_directories(ss.str().c_str());
     
     ss.str("");
-    ss << "temp/TermodinamicalStat_L=" << L << "_PP=" << PP_I << "/Ut.plot";
+    ss << "temp/TermodinamicalStat_L=" << "3D_" << L << "_PP=" << PP_I << "/Ut.plot";
     plot_f.open(ss.str().c_str());
 
     plot_f << "#!/usr/bin/gnuplot -persist\n" << \
@@ -1708,7 +1713,7 @@ int main(int argc, char *argv[])  {
     plot_f.close();
 
     ss.str("");
-    ss << "temp/TermodinamicalStat_L=" << L << "_PP=" << PP_I << "/Ft.plot";
+    ss << "temp/TermodinamicalStat_L=" << "3D_" << L << "_PP=" << PP_I << "/Ft.plot";
     plot_f.open(ss.str().c_str());
 
     plot_f << "#!/usr/bin/gnuplot -persist\n" << \
@@ -1722,7 +1727,7 @@ int main(int argc, char *argv[])  {
     plot_f.close();
 
     ss.str("");
-    ss << "temp/TermodinamicalStat_L=" << L << "_PP=" << PP_I << "/St.plot";
+    ss << "temp/TermodinamicalStat_L=" << "3D_" << L << "_PP=" << PP_I << "/St.plot";
     plot_f.open(ss.str().c_str());
 
     plot_f << "#!/usr/bin/gnuplot -persist\n" << \
@@ -1736,7 +1741,7 @@ int main(int argc, char *argv[])  {
     plot_f.close();
 
     ss.str("");
-    ss << "temp/TermodinamicalStat_L=" << L << "_PP=" << PP_I << "/Ct.plot";
+    ss << "temp/TermodinamicalStat_L=" << "3D_" << L << "_PP=" << PP_I << "/Ct.plot";
     plot_f.open(ss.str().c_str());
 
     plot_f << "#!/usr/bin/gnuplot -persist\n" << \
@@ -1750,12 +1755,12 @@ int main(int argc, char *argv[])  {
     plot_f.close();
 
     ss.str("");
-    ss << "temp/DensityStat_L=" << L << "_PP=" << PP_I;
+    ss << "temp/DensityStat_L=" << "3D_" << L << "_PP=" << PP_I;
 
     boost::filesystem::create_directories(ss.str().c_str());
 
     ss.str("");
-    ss << "temp/DensityStat_L=" << L << "_PP=" << PP_I << "/Ei.plot";
+    ss << "temp/DensityStat_L=" << "3D_" << L << "_PP=" << PP_I << "/Ei.plot";
     plot_f.open(ss.str().c_str());
 
     plot_f << "#!/usr/bin/gnuplot -persist\n" << \
@@ -1769,7 +1774,7 @@ int main(int argc, char *argv[])  {
     plot_f.close();   
 
     ss.str("");
-    ss << "temp/DensityStat_L=" << L << "_PP=" << PP_I << "/gi.plot";
+    ss << "temp/DensityStat_L=" << "3D_" << L << "_PP=" << PP_I << "/gi.plot";
     plot_f.open(ss.str().c_str());
 
     plot_f << "#!/usr/bin/gnuplot -persist\n" << \
@@ -1798,24 +1803,24 @@ int main(int argc, char *argv[])  {
     // plot_f.close();
 
     ss.str("");
-    ss << "graph/TermodinamicalStat_L=" << L << "_PP=" << PP_I;
+    ss << "graph/TermodinamicalStat_L=" << "3D_" << L << "_PP=" << PP_I;
 
     boost::filesystem::create_directories(ss.str().c_str());
 
     ss.str("");
-    ss << "graph/DensityStat_L=" << L << "_PP=" << PP_I;
+    ss << "graph/DensityStat_L=" << "3D_" << L << "_PP=" << PP_I;
 
     boost::filesystem::create_directories(ss.str().c_str());
 
     ss.str("");
-    ss << "plot_graph_L=" << L << "_PP=" << PP_I << ".sh";
+    ss << "plot_graph_L=" << "3D_" << L << "_PP=" << PP_I << ".sh";
 
     script_f.open(ss.str().c_str());
 
     ss.str("");
     ss << "#!/bin/bash\n";
-    ss << "gnuplot temp/TermodinamicalStat_L=" << L << "_PP=" << PP_I << "/*.plot\n";
-    ss << "gnuplot temp/DensityStat_L=" << L << "_PP=" << PP_I << "/*.plot\n";
+    ss << "gnuplot temp/TermodinamicalStat_L=" << "3D_" << L << "_PP=" << PP_I << "/*.plot\n";
+    ss << "gnuplot temp/DensityStat_L=" << "3D_" << L << "_PP=" << PP_I << "/*.plot\n";
 
     script_f << ss.str();
 
@@ -1830,7 +1835,7 @@ int main(int argc, char *argv[])  {
     std::cout << "Time: " << time_e - time_b << "'s" << std::endl;
 
     ss.str("");
-    ss << "Time-" << L << "-PP-" << PP_I << "_MAXMCS=" << MAX_MCS_COUNT;
+    ss << "Time-3D" << L << "-PP-" << PP_I << "_MAXMCS=" << MAX_MCS_COUNT;
 
     time_f.open(ss.str().c_str());
 
@@ -1864,7 +1869,7 @@ int MakeScriptsForAnimation(std::string str)   {
         for(int intervals = 0; intervals < PP_I; intervals++)  {
     
             ss.str("");
-            ss << "plot_test_g_graph-L=" << L << "_PP=" << PP_I << "-" << intervals << ".sh";
+            ss << "plot_test_g_graph-L=" << "3D_" << L << "_PP=" << PP_I << "-" << intervals << ".sh";
                 
             graph_sh.open(ss.str().c_str());
             graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << intervals << "/temp/*.plot\n";
@@ -1875,7 +1880,7 @@ int MakeScriptsForAnimation(std::string str)   {
         }
     
         ss.str("");
-        ss << "plot_test_g_graph-L=" << L << "_PP=" << PP_I << "-AV" << ".sh";
+        ss << "plot_test_g_graph-L=" << "3D_" << L << "_PP=" << PP_I << "-AV" << ".sh";
     
         graph_sh.open(ss.str().c_str());
         graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/DoS-L=" << L << "_PP=" << PP_I << "-AV" << "/temp/*.plot\n";
@@ -1889,7 +1894,7 @@ int MakeScriptsForAnimation(std::string str)   {
         for(int intervals = 0; intervals < PP_I; intervals++)  {
 
             ss.str("");
-            ss << "plot_test_hist_graph-L=" << L << "_PP=" << PP_I << "-" << intervals << ".sh";
+            ss << "plot_test_hist_graph-L=" << "3D_" << L << "_PP=" << PP_I << "-" << intervals << ".sh";
         
             graph_sh.open(ss.str().c_str());
             graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/Hist-L=" << L << "_PP=" << PP_I << "-" << intervals << "/temp/*.plot\n";
@@ -1900,7 +1905,7 @@ int MakeScriptsForAnimation(std::string str)   {
         }
 
         ss.str("");
-        ss << "plot_test_hist_graph-L=" << L << "_PP=" << PP_I << "-AV" << ".sh";
+        ss << "plot_test_hist_graph-L=" << "3D_" << L << "_PP=" << PP_I << "-AV" << ".sh";
     
         graph_sh.open(ss.str().c_str());
         graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/Hist-L=" << L << "_PP=" << PP_I << "-AV" << "/temp/*.plot\n";
