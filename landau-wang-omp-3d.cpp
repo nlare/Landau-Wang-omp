@@ -30,9 +30,9 @@
 // #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 4
-#define L 32
+#define L 8
 #define DISABLE_FLAT_CRITERIA
-#define MAX_MCS_COUNT 1000000
+#define MAX_MCS_COUNT 100000
 
 // int neighbour_spins(int,int);
 
@@ -1659,16 +1659,16 @@ int main(int argc, char *argv[])  {
         for(int i = 0; i < top_b; i++)  {
             // if((i!=0) && i%2 == 0 && (i!=L*L-1) && g_averaged[i]==g_averaged[i])    {
             if(i%2 == 0 && (i!=L*L-1))    {
-                lambdatemp = g_averaged[i] - energy(i)/T;
+                lambdatemp = g_normalized[i] - energy(i)/T;
                 if(lambdatemp > lambda) lambda = lambdatemp;
             }
         }
 
         for(int i = 0; i < top_b; i++) {
             if(i != 1 && i%2 == 0 && (i!=L*L-1))    {
-                EE += energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
-                EE2 += energy(i)*energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
-                GE += exp(g_averaged[i]-energy(i)/T-lambda);
+                EE += energy(i)*exp(g_normalized[i]-(energy(i))/T-lambda);
+                EE2 += energy(i)*energy(i)*exp(g_normalized[i]-(energy(i))/T-lambda);
+                GE += exp(g_normalized[i]-energy(i)/T-lambda);
             }
         }
 

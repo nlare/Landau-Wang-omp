@@ -1644,16 +1644,16 @@ int main(int argc, char *argv[])  {
         for(int i = 0; i < top_b; i++)  {
             // if((i!=0) && i%2 == 0 && (i!=L*L-1) && g_averaged[i]==g_averaged[i])    {
             if(i%2 == 0 && (i!=L*L-1))    {
-                lambdatemp = g_averaged[i] - energy(i)/T;
+                lambdatemp = g_normalized[i] - energy(i)/T;
                 if(lambdatemp > lambda) lambda = lambdatemp;
             }
         }
 
         for(int i = 0; i < top_b; i++) {
             if(i != 1 && i%2 == 0 && (i!=L*L-1))    {
-                EE += energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
-                EE2 += energy(i)*energy(i)*exp(g_averaged[i]-(energy(i))/T-lambda);
-                GE += exp(g_averaged[i]-energy(i)/T-lambda);
+                EE += energy(i)*exp(g_normalized[i]-(energy(i))/T-lambda);
+                EE2 += energy(i)*energy(i)*exp(g_normalized[i]-(energy(i))/T-lambda);
+                GE += exp(g_normalized[i]-energy(i)/T-lambda);
             }
         }
 
