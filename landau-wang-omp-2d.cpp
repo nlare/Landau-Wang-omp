@@ -29,7 +29,7 @@
 #define COUT_EVERY_NUM_STEPS
 // #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 8
+#define PP_I 2
 #define L 16
 #define DISABLE_FLAT_CRITERIA
 #define MAX_MCS_COUNT 100000
@@ -911,8 +911,8 @@ int main(int argc, char *argv[])  {
         // for(int )
 
         for(int i = 0; i < top_b; i++)  {
-            if(PP_I == 2) div_averaging[i] = PP_I;
-            if(PP_I >= 4) div_averaging[i] = 0;
+            // if(PP_I == 2) div_averaging[i] = PP_I;
+            if(PP_I >= 2) div_averaging[i] = 0;
         }
 
         div_averaging[0] = 1;
@@ -961,15 +961,20 @@ int main(int argc, char *argv[])  {
                      */
                     if(PP_I == 2)   {
                         
-                        if(rank == 0)   {   
+                        if((i > E_min[rank]+2) && (i < E_max[rank]))    {
 
-                            if(i <= overlap_interval_begin+2)    {
+                            div_averaging[i]++;
 
-                                g_averaged[i] = massive[rank].g[i];
+                            // g_averaged[i] = g_averaged[i] + massive[rank].g[i];
 
-                            }
+                        }
 
-                            if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
+                    
+                        // g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
+
+                        if(rank == 0)   {
+
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -979,13 +984,7 @@ int main(int argc, char *argv[])  {
 
                         if(rank == 1)   {
 
-                            if(i >= overlap_interval_end)    {
-
-                                g_averaged[i] = massive[rank].g[i]; 
-
-                            }
-
-                            if((i > overlap_interval_begin+2) && i < overlap_interval_end)    {
+                            if((i > E_min[rank]+2) && (i < E_max[rank]))    {
 
                                 g_averaged[i] = g_averaged[i] + massive[rank].g[i]; 
 
@@ -1322,16 +1321,16 @@ int main(int argc, char *argv[])  {
                     // -------------- AVERAGING ALL REPLICAS G[E] ----------------
                     // if(f == 2.7182818284)    
 
-                    if(i > overlap_interval_begin && i < overlap_interval_end)  {
+                    // if(i > overlap_interval_begin && i < overlap_interval_end)  {
 
 
-                        // ...
-                    }   else    {
+                    //     // ...
+                    // }   else    {
 
-                        // g_averaged[i] -= 1;
-                        if(PP_I == 2) div_averaging[i] = 1;
+                    //     // g_averaged[i] -= 1;
+                    //     // if(PP_I == 2) div_averaging[i] = 1;
 
-                    }
+                    // }
                 }
 
                 #ifdef DEBUG_H_SUM_G_SUM
