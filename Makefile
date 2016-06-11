@@ -12,4 +12,4 @@ all:
 3d:
 	g++ -fopenmp -g landau-wang-omp-3d.cpp -o landau-wang-omp-3d -lboost_system -lboost_filesystem -ffast-math -flto -march=native -xhost -O3
 clean:
-	rm landau-wang-omp
+	rm landau-wang-omp-3d landau-wang-omp-2d
