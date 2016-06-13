@@ -30,9 +30,9 @@
 // #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
 #define PP_I 2
-#define L 32
+#define L 16
 #define DISABLE_FLAT_CRITERIA
-#define MAX_MCS_COUNT 1000000
+#define MAX_MCS_COUNT 100000
 
 // int neighbour_spins(int,int);
 
@@ -929,8 +929,7 @@ int main(int argc, char *argv[])  {
         // for(int )
 
         for(int i = 0; i < top_b; i++)  {
-            if(PP_I == 2) div_averaging[i] = PP_I;
-            if(PP_I >= 4) div_averaging[i] = 0;
+            if(PP_I >= 2) div_averaging[i] = 0;
         }
 
         div_averaging[0] = 1;
@@ -967,7 +966,7 @@ int main(int argc, char *argv[])  {
     
                     // -------------- AVERAGING ALL REPLICAS G[E] -----------------
 
-                    hist_averaged[i] = hist_averaged[i] + massive[rank].hist[i];
+                    // hist_averaged[i] = hist_averaged[i] + massive[rank].hist[i];
                     // std::cout << "----------------------------------------------" << std::endl;
 
                     // hist_averaged[i] = 1.0;
@@ -1593,19 +1592,13 @@ int main(int argc, char *argv[])  {
         if(i%2 == 0 && i > 4)   {
             g_normalized[i] = g_averaged[i] - min_in_ge;
         }
-        // g_averaged[i]/=div_averaging[i];
-        // if(g_averaged[i] > 1.0)
-        // if(L == 8)  {
-            // if(massive[0].hist[i]!=0 || massive[ 1].hist[i]!=0)
+
             if(i%2 == 0 && i > 4)   {
             std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] \
                       << ":\t" << massive[0].g[i] << "\t" << massive[1].g[i] << "\t" \
                       << g_normalized[i] << std::endl;
-                  // << "\t" << massive[0].g[i] - massive[0].g[4] << "\t" \
-                  // << massive[1].g[i] - massive[1].g[20] << "\t" \
     
             }
-        // }
 
     }  
 
@@ -1647,7 +1640,7 @@ int main(int argc, char *argv[])  {
 
     // }
 
-    for(double T = 0.01; T <= 8; T += 0.01)  {
+    for(double T = 0.1; T <= 8; T += 0.1)  {
 
         EE = 0;
         EE2 = 0;

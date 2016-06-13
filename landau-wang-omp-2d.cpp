@@ -29,10 +29,10 @@
 #define COUT_EVERY_NUM_STEPS
 // #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 2
-#define L 16
+#define PP_I 8
+#define L 32
 #define DISABLE_FLAT_CRITERIA
-#define MAX_MCS_COUNT 100000
+#define MAX_MCS_COUNT 1000000
 
 // int neighbour_spins(int,int);
 

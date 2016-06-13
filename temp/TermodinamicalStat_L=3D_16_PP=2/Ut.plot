@@ -4,4 +4,4 @@ set output "graph/TermodinamicalStat_L=16_PP=2/Ut.jpg"
 set grid x y
 set xlabel "T"
 set ylabel "Ut"
-plot "results/TermodinamicalStat_L=3D_16_PP=2_MAXMCS=1000000.dat" using 1:2 title "landau-wang-omp-16" with lines lt rgb "red"
+plot "results/TermodinamicalStat_L=3D_16_PP=2_MAXMCS=100000.dat" using 1:2 title "landau-wang-omp-16" with lines lt rgb "red"
