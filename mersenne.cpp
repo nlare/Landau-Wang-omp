@@ -22,6 +22,8 @@
 * GNU General Public License http://www.gnu.org/licenses/gpl.html
 *******************************************************************************/
 
+#pragma once
+
 #include "randomc.h"
 
 void CRandomMersenne::Init0(int seed) {
