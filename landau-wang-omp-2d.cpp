@@ -17,7 +17,9 @@
 #include <sstream>
 #include <fstream>
 #include <boost/filesystem.hpp>
-#include "mersenne.cpp"
+// #include "mersenne.cpp"
+#include "randomc.h"
+#include "landau-wang-omp.h"
 
 #define DEBUG
 // #define DEBUG_G
@@ -29,16 +31,21 @@
 #define COUT_EVERY_NUM_STEPS
 // #define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L))
-#define PP_I 8
-#define L 32
+// #define PP_I 8
+// #define L 32
 #define DISABLE_FLAT_CRITERIA
-#define MAX_MCS_COUNT 1000000
+// #define MAX_MCS_COUNT 1000000
 
 // int neighbour_spins(int,int);
 
-int MakeScriptsForAnimation(std::string);
+// int MakeScriptsForAnimation(std::string);
 
-int main(int argc, char *argv[])  {
+// int main(int argc, char *argv[])  {
+int LW2D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
+
+    int L = _L;
+    int PP_I = _PP_I;
+    int MAX_MCS_COUNT = _MAX_MCS_COUNT;
 
     int b, b_new, top_b;    // Текущий энергетический уровень и последующий, top_b - предельный энергетический уровень
     double f, f_min, ln_f;  /* "f" - начальный множитель для энергетических уровней, 
@@ -50,7 +57,6 @@ int main(int argc, char *argv[])  {
     double flat_threshold;   // Порог "плоскости" гистограммы
     double time_b, time_e;  
     double T;
-    int it_count_g[PP_I],it_count_hist[PP_I];
     int it_count_av;
     int global_it_count;
     int count_mcs;
@@ -65,17 +71,28 @@ int main(int argc, char *argv[])  {
     double exchange; // Переменная для сохранения g(i) реплики, с которой происходит обмен
 
     bool trigger = true;
-    bool convergence_trigger[PP_I];
+    // bool convergence_trigger[PP_I];
     int overlap_interval_begin, overlap_interval_end;
 
+    int *it_count_g, *it_count_hist;
+
+    it_count_g = new int [PP_I];
+    it_count_hist = new int [PP_I];
+
     std::cout << "adding g_averaged massive\n";
-    double g_averaged[4*L*L];
+
+    double *g_averaged;
+    g_averaged = new double [4*L*L];
 
     std::cout << "adding g_normalized massive\n";
-    double g_normalized[4*L*L];
+
+    double *g_normalized;
+    g_normalized = new double[4*L*L];
 
     std::cout << "adding hist_averaged massive\n";
-    double hist_averaged[4*2*L*L];
+
+    double *hist_averaged;
+    hist_averaged = new double [4*2*L*L];
 
     CRandomMersenne rg(13617235);
 
@@ -111,19 +128,48 @@ int main(int argc, char *argv[])  {
 
     struct _spins   {
     
-        int spin[L][L];
-        bool defect[L][L];
+        int **spin;
+        bool **defect;
 
-    }   system_of[PP_I];
+    }   *system_of;
 
-    top_b=L*L;
+    system_of = new _spins [PP_I];
+
+    for(int rank = 0; rank < PP_I; rank++)  {
+    
+        system_of[rank].spin = new int *[L];
+
+        for(int i = 0; i < L; i++)  {
+
+            system_of[rank].spin[i] = new int [L];
+
+        }
+
+        system_of[rank].defect = new bool *[L];
+        
+        for(int i = 0; i < L; i++)  {
+
+            system_of[rank].defect[i] = new bool [L];
+
+        }
+
+    }
 
     struct _massive   {
         
-        double g[4*L*L];
-        int hist[4*L*L];
+        double *g;
+        int *hist;
 
-    }   massive[PP_I];
+    }   *massive;
+
+    massive = new _massive [PP_I];
+
+    for(int rank = 0; rank < PP_I; rank++)  {
+
+        massive[rank].g = new double [4*L*L];
+        massive[rank].hist = new int [4*L*L];
+
+    }
 
     for(int i = 0; i <= 2*L*L; i++)    {
         g_averaged[i] = 0.0;
@@ -220,7 +266,7 @@ int main(int argc, char *argv[])  {
         #pragma omp parallel for \
         firstprivate(f,min_steps,skip,flat_threshold,h,E_min,E_max,top_b,it_count_g) \
         private(b_new,b,ln_f)  \
-        shared(system_of,massive,b_last,buffer,convergence_trigger,overlap_interval_begin,overlap_interval_end)
+        shared(system_of,massive,b_last,buffer,overlap_interval_begin,overlap_interval_end,L,PP_I,MAX_MCS_COUNT)
         for(int pp_i = 0; pp_i < PP_I; pp_i++)  {
         
         int seed = 1 + rand() % 10000;
@@ -1595,8 +1641,8 @@ int main(int argc, char *argv[])  {
 
     std::cout << "End Averaging of G." << std::endl;
 
-    MakeScriptsForAnimation("G"); // Для G[]
-    MakeScriptsForAnimation("H"); // Для Hist[]
+    MakeScriptsForAnimation("G", 2, L, PP_I); // Для G[]
+    MakeScriptsForAnimation("H", 2, L, PP_I); // Для Hist[]
 
     double EE, EE2, GE, Ut, Ft, St, Ct, lambdatemp, lambda;
 
@@ -1833,85 +1879,41 @@ int main(int argc, char *argv[])  {
     delete [] E_max;
     delete [] b_last;
 
-}
+    delete [] g_averaged;
+    delete [] g_normalized;
+    delete [] hist_averaged;
 
-int MakeScriptsForAnimation(std::string str)   {
+    for(int rank = 0; rank < PP_I; rank++)  {
 
-    // Функция создания скриптов для анимации для плотности энергетических состояний
+        for(int i = 0; i < L; i++)  {
 
-    // Функция создания скриптов для создания анимации для гистограммы
-
-    std::stringstream ss;
-    std::ofstream graph_sh;
-
-    if(str == "G")  {
-        
-        for(int intervals = 0; intervals < PP_I; intervals++)  {
-    
-            ss.str("");
-            ss << "plot_test_g_graph-L=" << L << "_PP=" << PP_I << "-" << intervals << ".sh";
-                
-            graph_sh.open(ss.str().c_str());
-            graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << intervals << "/temp/*.plot\n";
-            graph_sh <<  "convert -delay 10 -loop 0 test_g/DoS-L=" << L << "_PP=" << PP_I << "-" << intervals << \
-                            "/graphs/{1..20}.jpg animate-DoS-L=" << L << "_PP=" << PP_I <<"-" << intervals << ".gif\n";
-            graph_sh.close();
-    
-        }
-    
-        ss.str("");
-        ss << "plot_test_g_graph-L=" << L << "_PP=" << PP_I << "-AV" << ".sh";
-    
-        graph_sh.open(ss.str().c_str());
-        graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/DoS-L=" << L << "_PP=" << PP_I << "-AV" << "/temp/*.plot\n";
-        graph_sh <<  "convert -delay 10 -loop 0 test_g/DoS-L=" << L << "_PP=" << PP_I << "-AV" << \
-                        "/graphs/{1..20}.jpg animate-DoS-L=" << L << "_PP=" << PP_I <<"-AV" << ".gif\n";
-        graph_sh.close();
-    }
-
-    if(str == "H")  {
-
-        for(int intervals = 0; intervals < PP_I; intervals++)  {
-
-            ss.str("");
-            ss << "plot_test_hist_graph-L=" << L << "_PP=" << PP_I << "-" << intervals << ".sh";
-        
-            graph_sh.open(ss.str().c_str());
-            graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/Hist-L=" << L << "_PP=" << PP_I << "-" << intervals << "/temp/*.plot\n";
-            graph_sh <<  "convert -delay 10 -loop 0 test_g/Hist-L=" << L << "_PP=" << PP_I << "-" << intervals << \
-                    "/graphs/{1..200}.jpg animate-Hist-L=" << L << "_PP=" << PP_I << "-" << intervals << ".gif\n";
-            graph_sh.close();
+            delete [] system_of[rank].spin[i];
 
         }
 
-        ss.str("");
-        ss << "plot_test_hist_graph-L=" << L << "_PP=" << PP_I << "-AV" << ".sh";
-    
-        graph_sh.open(ss.str().c_str());
-        graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/Hist-L=" << L << "_PP=" << PP_I << "-AV" << "/temp/*.plot\n";
-        graph_sh <<  "convert -delay 10 -loop 0 test_g/Hist-L=" << L << "_PP=" << PP_I << "-AV" << \
-                            "/graphs/{1..200}.jpg animate-Hist-L=" << L << "_PP=" << PP_I <<"-AV" << ".gif\n";
-        graph_sh.close();
+        delete [] system_of[rank].spin;
+        
+        for(int i = 0; i < L; i++)  {
+            
+            delete [] system_of[rank].defect[i];
+
+        }
+
+        delete [] system_of[rank].defect;
 
     }
+
+    delete [] system_of;
+
+    for(int rank = 0; rank < PP_I; rank++)  {
+
+        delete [] massive[rank].g;
+        delete [] massive[rank].hist;
+
+    }
+
+    delete [] massive;
 
     return 0;
 
 }
-
-
-// inline int neighbour_spins(int **spin, int i, int j)    {
-
-//     int result;
-
-//     if(i==0)    result=spin[L-1][j];    
-//     else        result=spin[i-1][j];
-//     if(i==L-1)  result+=spin[0][j];
-//     else        result+=spin[i+1][j];
-//     if(j==0)    result+=spin[i][L-1];
-//     else        result+=spin[i][j-1];
-//     if(j==L-1)  result+=spin[i][0];
-//     else        result+=spin[i][j+1];
-
-//     return result;
-// }

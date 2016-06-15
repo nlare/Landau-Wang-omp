@@ -1,15 +1,8 @@
-/*
- * landau-wang.h
- *
- *  Created on: 24 мая 2014 г.
- *      Author: nlare
- */
+#ifndef LANDAU_WANG_OMP_H_
+#define LANDAU_WANG_OMP_H_
 
-#ifndef LANDAU_WANG_H_
-#define LANDAU_WANG_H_
+int MakeScriptsForAnimation(std::string, int, int, int);
+int LW2D(int, int, int);
+int LW3D(int, int, int);
 
-
-
-
-
-#endif /* LANDAU_WANG_H_ */
+#endif

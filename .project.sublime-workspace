@@ -4,6 +4,66 @@
 		"selected_items":
 		[
 			[
+				"la",
+				"landau-wang-omp-3d"
+			],
+			[
+				"landa",
+				"landau-wang-omp"
+			],
+			[
+				"DIM",
+				"DIM_buf"
+			],
+			[
+				"MA",
+				"MAX_MCS_COUNT"
+			],
+			[
+				"M",
+				"MAX_MCS_COUNT"
+			],
+			[
+				"PP",
+				"PP_I"
+			],
+			[
+				"Ma",
+				"MAX_MCS_COUNT_buf"
+			],
+			[
+				"lan",
+				"landau-wang-omp"
+			],
+			[
+				"system",
+				"system_of"
+			],
+			[
+				"syste",
+				"system_of"
+			],
+			[
+				"sys",
+				"system_of"
+			],
+			[
+				"hist",
+				"hist_averaged"
+			],
+			[
+				"conver",
+				"convergence_trigger"
+			],
+			[
+				"_M",
+				"_MAX_MCS_COUNT"
+			],
+			[
+				"_PP",
+				"_PP_I"
+			],
+			[
 				"omp",
 				"omp_get_thread_num"
 			],
@@ -76,10 +136,6 @@
 				"hi_count"
 			],
 			[
-				"hist",
-				"hist2av"
-			],
-			[
 				"hi",
 				"histav2"
 			],
@@ -130,10 +186,6 @@
 			[
 				"ex",
 				"exchange_number"
-			],
-			[
-				"PP",
-				"PP_I"
 			]
 		]
 	},
@@ -143,7 +195,7 @@
 			"file": "landau-wang-omp-3d.cpp",
 			"settings":
 			{
-				"buffer_size": 65934,
+				"buffer_size": 64168,
 				"line_ending": "Unix"
 			}
 		},
@@ -151,8 +203,50 @@
 			"file": "landau-wang-omp-2d.cpp",
 			"settings":
 			{
-				"buffer_size": 65042,
+				"buffer_size": 63502,
 				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "make-scripts-to-plot.cpp",
+			"settings":
+			{
+				"buffer_size": 5328,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "landau-wang-omp.h",
+			"settings":
+			{
+				"buffer_size": 169,
+				"line_ending": "Unix",
+				"name": "#ifndef LANDAU_WANG_OMP_3D_H_"
+			}
+		},
+		{
+			"file": "main.cpp",
+			"settings":
+			{
+				"buffer_size": 2607,
+				"line_ending": "Unix",
+				"name": "#include \"landau-wang-omp-3d\""
+			}
+		},
+		{
+			"file": "mersenne.cpp",
+			"settings":
+			{
+				"buffer_size": 6052,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Makefile",
+			"settings":
+			{
+				"buffer_size": 850,
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -177,14 +271,6 @@
 			{
 				"buffer_size": 1564,
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Makefile",
-			"settings":
-			{
-				"buffer_size": 1075,
-				"line_ending": "Windows"
 			}
 		}
 	],
@@ -345,6 +431,9 @@
 	],
 	"file_history":
 	[
+		"/home/nlare/_code/cpp-Landau-Wang-omp-averaged/randomc.h",
+		"/home/nlare/_code/cpp-Landau-Wang-omp-averaged/landau-wang-omp-3d",
+		"/home/nlare/_code/cpp-Landau-Wang-omp-averaged/landau-wang-omp-2d.cpp",
 		"/home/nlare/_code/cpp-Landau-Wang-omp-averaged/landau-wang-omp-test.cpp",
 		"/home/nlare/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
 		"/home/nlare/_code/cpp-Landau-Wang/landau-wang.cpp",
@@ -386,6 +475,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"MAKE",
+			"MAKES",
+			"Make",
 			"IS ",
 			"E_min",
 			"Time",
@@ -427,7 +519,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -436,7 +528,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 65934,
+						"buffer_size": 64168,
 						"regions":
 						{
 						},
@@ -454,10 +546,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1209.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -466,15 +558,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 65042,
+						"buffer_size": 63502,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								713,
-								713
+								47369,
+								47369
 							]
 						],
 						"settings":
@@ -484,14 +576,160 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 18330.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "make-scripts-to-plot.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5328,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								50,
+								50
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 975.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 3,
+					"file": "landau-wang-omp.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 169,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								96,
+								96
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#ifndef LANDAU_WANG_OMP_3D_H_",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "main.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2607,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1827,
+								1827
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#include \"landau-wang-omp-3d\"",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 897.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "mersenne.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6052,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								890,
+								890
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 3,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 390.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "Makefile",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 850,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								555,
+								555
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
 					"file": "/home/nlare/_code/tex-guide_systemd/document.tex",
 					"semi_transient": false,
 					"settings":
@@ -515,11 +753,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 8,
 					"file": "/home/nlare/_code/tex-Landau-Wang-presentation-09.12.15/presentation.tex",
 					"semi_transient": false,
 					"settings":
@@ -545,11 +783,11 @@
 						"translation.y": 91.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 9,
 					"file": "/home/nlare/_code/tex-guide_hotkeys/document.tex",
 					"semi_transient": false,
 					"settings":
@@ -575,35 +813,7 @@
 						"translation.y": 130.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "Makefile",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1075,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								600,
-								600
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Makefile/Makefile.sublime-syntax"
-						},
-						"translation.x": 171.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
+					"stack_index": 8,
 					"type": "text"
 				}
 			]

@@ -17,9 +17,9 @@
 #include <sstream>
 #include <fstream>
 #include <boost/filesystem.hpp>
-#include "mersenne.cpp"
-// #include "randomc.h"
-#include "landau-wang-omp-3d.h"
+// #include "mersenne.cpp"
+#include "randomc.h"
+#include "landau-wang-omp.h"
 
 #define DEBUG
 #define DEBUG_G
@@ -1662,8 +1662,8 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
     std::cout << "End Averaging of G." << std::endl;
 
-    MakeScriptsForAnimation("G", L, PP_I); // Для G[]
-    MakeScriptsForAnimation("H", L, PP_I); // Для Hist[]
+    MakeScriptsForAnimation("G", 3, L, PP_I); // Для G[]
+    MakeScriptsForAnimation("H", 3, L, PP_I); // Для Hist[]
 
     double EE, EE2, GE, Ut, Ft, St, Ct, lambdatemp, lambda;
 
@@ -1941,88 +1941,6 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
     delete [] massive;
 
-}
-
-int MakeScriptsForAnimation(std::string str, int _L, int _PP_I)   {
-
-    // Функция создания скриптов для анимации для плотности энергетических состояний
-
-    // Функция создания скриптов для создания анимации для гистограммы
-
-    // int L = _L;
-    // int PP_I = _PP_I;
-
-    std::stringstream ss;
-    std::ofstream graph_sh;
-
-    if(str == "G")  {
-        
-        for(int intervals = 0; intervals < _PP_I; intervals++)  {
-    
-            ss.str("");
-            ss << "plot_test_g_graph-L=" << "3D_" << _L << "_PP=" << _PP_I << "-" << intervals << ".sh";
-                
-            graph_sh.open(ss.str().c_str());
-            graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/DoS-L=" << _L << "_PP=" << _PP_I << "-" << intervals << "/temp/*.plot\n";
-            graph_sh <<  "convert -delay 10 -loop 0 test_g/DoS-L=" << _L << "_PP=" << _PP_I << "-" << intervals << \
-                            "/graphs/{1..20}.jpg animate-DoS-L=" << _L << "_PP=" << _PP_I <<"-" << intervals << ".gif\n";
-            graph_sh.close();
-    
-        }
-    
-        ss.str("");
-        ss << "plot_test_g_graph-L=" << "3D_" << _L << "_PP=" << _PP_I << "-AV" << ".sh";
-    
-        graph_sh.open(ss.str().c_str());
-        graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/DoS-L=" << _L << "_PP=" << _PP_I << "-AV" << "/temp/*.plot\n";
-        graph_sh <<  "convert -delay 10 -loop 0 test_g/DoS-L=" << _L << "_PP=" << _PP_I << "-AV" << \
-                        "/graphs/{1..20}.jpg animate-DoS-L=" << _L << "_PP=" << _PP_I <<"-AV" << ".gif\n";
-        graph_sh.close();
-    }
-
-    if(str == "H")  {
-
-        for(int intervals = 0; intervals < _PP_I; intervals++)  {
-
-            ss.str("");
-            ss << "plot_test_hist_graph-L=" << "3D_" << _L << "_PP=" << _PP_I << "-" << intervals << ".sh";
-        
-            graph_sh.open(ss.str().c_str());
-            graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/Hist-L=" << _L << "_PP=" << _PP_I << "-" << intervals << "/temp/*.plot\n";
-            graph_sh <<  "convert -delay 10 -loop 0 test_g/Hist-L=" << _L << "_PP=" << _PP_I << "-" << intervals << \
-                    "/graphs/{1..200}.jpg animate-Hist-L=" << _L << "_PP=" << _PP_I << "-" << intervals << ".gif\n";
-            graph_sh.close();
-
-        }
-
-        ss.str("");
-        ss << "plot_test_hist_graph-L=" << "3D_" << _L << "_PP=" << _PP_I << "-AV" << ".sh";
-    
-        graph_sh.open(ss.str().c_str());
-        graph_sh << "#!/bin/bash\n" <<  "gnuplot test_g/Hist-L=" << _L << "_PP=" << _PP_I << "-AV" << "/temp/*.plot\n";
-        graph_sh <<  "convert -delay 10 -loop 0 test_g/Hist-L=" << _L << "_PP=" << _PP_I << "-AV" << \
-                            "/graphs/{1..200}.jpg animate-Hist-L=" << _L << "_PP=" << _PP_I <<"-AV" << ".gif\n";
-        graph_sh.close();
-
-    }
-
     return 0;
 
 }
-
-
-// inline int neighbour_spins(int **spin, int i, int j)    {
-
-//     int result;
-
-//     if(i==0)    result=spin[L-1][j];    
-//     else        result=spin[i-1][j];
-//     if(i==L-1)  result+=spin[0][j];
-//     else        result+=spin[i+1][j];
-//     if(j==0)    result+=spin[i][L-1];
-//     else        result+=spin[i][j-1];
-//     if(j==L-1)  result+=spin[i][0];
-//     else        result+=spin[i][j+1];
-
-//     return result;
-// }

@@ -22,7 +22,7 @@
 * GNU General Public License http://www.gnu.org/licenses/gpl.html
 *******************************************************************************/
 
-#pragma once
+// #pragma once
 
 #include "randomc.h"
 
