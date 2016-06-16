@@ -1679,27 +1679,39 @@ int LW2D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
     for(double T = 0.01; T <= 8; T += 0.01)  {
 
-        EE = 0;
-        EE2 = 0;
-        GE = 0;
+        EE = 0.0;
+        EE2 = 0.0;
+        GE = 0.0;
 
-        lambda = 0;
-        lambdatemp = 0;
+        lambda = 0.0;
+        lambdatemp = 0.0;
 
-        for(int i = 0; i < top_b; i++)  {
-            // if((i!=0) && i%2 == 0 && (i!=L*L-1) && g_averaged[i]==g_averaged[i])    {
-            if(i%2 == 0 && (i!=L*L-1))    {
-                lambdatemp = g_normalized[i] - energy(i)/T;
-                if(lambdatemp > lambda) lambda = lambdatemp;
-            }
-        }
+        // for(int i = 0; i < top_b; i++)  {
+
+        //     if((i > 4) && (i%2 == 0))    {
+
+        //         lambdatemp = g_normalized[i] - energy(i)/T;
+        //         // if(lambdatemp > lambda) lambda = lambdatemp;
+        //         lambda = lambdatemp;
+
+        //     }
+
+        // }
 
         for(int i = 0; i < top_b; i++) {
-            if(i != 1 && i%2 == 0 && (i!=L*L-1))    {
+
+            if((i > 4) && (i%2 == 0))    {
+
+                lambdatemp = g_normalized[i] - energy(i)/T;
+                if(lambdatemp > lambda) lambda = lambdatemp;
+                // lambda = lambdatemp;
+
                 EE += energy(i)*exp(g_normalized[i]-(energy(i))/T-lambda);
                 EE2 += energy(i)*energy(i)*exp(g_normalized[i]-(energy(i))/T-lambda);
                 GE += exp(g_normalized[i]-energy(i)/T-lambda);
+
             }
+
         }
 
         Ut = EE/GE;
@@ -1707,13 +1719,15 @@ int LW2D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
         St = (Ut-Ft)/T;
         Ct = ((EE2/GE)-(Ut*Ut))/(T*T);
 
+        std::cout << T << ": " << Ct << std::endl;
+
         // if((Ut==Ut)==true&&(Ft==Ft)==true&&(St==St)==true&&(Ct==Ct)==true) // Не пишем NaN 
         out_f_td << std::fixed << std::setprecision(8) << T << "\t" << Ut/(L*L) << "\t" << Ft/(L*L) << "\t" << St/(L*L) << "\t" << Ct/(L*L) << "\n";
 
     }
 
     for(int i = 0; i <= top_b; i++)  {
-        if((i!=2*(L*L)-1) && i%2==0 && i > 4)    {
+        if((i%2 == 0) && (i > 4))    {
             if((g_normalized[i]) >= 0 && (g_normalized[i])==(g_normalized[i]))
             out_f_ds << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << g_normalized[i] << "\n";
         }
