@@ -6,6 +6,7 @@
 
 all:
 	g++ -fopenmp main.cpp landau-wang-omp-3d.cpp landau-wang-omp-2d.cpp make-scripts-to-plot.cpp mersenne.cpp -o landau-wang-omp -lboost_system -lboost_filesystem -ffast-math -flto -march=native -msse4.2 -xhost -O3
+#	g++ -fopenmp main.cpp landau-wang-omp-3d.cpp landau-wang-omp-2d.cpp make-scripts-to-plot.cpp mersenne.cpp -o landau-wang-omp -lboost_system -lboost_filesystem -march=native -msse4.2 -xhost -O3
 	#g++ -fopenmp -g landau-wang-omp-3d.cpp -o landau-wang-omp-3d -lboost_system -lboost_filesystem -ffast-math -flto -march=native -msse4.2 -xhost -O3
 clean:
 	rm landau-wang-omp

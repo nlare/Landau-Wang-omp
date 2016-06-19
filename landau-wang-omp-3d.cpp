@@ -34,6 +34,7 @@
 // #define PP_I 2
 // #define L 8
 #define DISABLE_FLAT_CRITERIA
+#define FULL_ITERATION_TIME_OUT
 // #define MAX_MCS_COUNT 100000
 
 // int neighbour_spins(int,int);
@@ -284,6 +285,16 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
     // Считаем пока "f" не примет минимальное значение
     while(f > f_min)    {
 
+        double f_iteration_time_begin, f_iteration_time_end;
+
+        #ifdef FULL_ITERATION_TIME_OUT
+        {
+
+        f_iteration_time_begin = omp_get_wtime();
+
+        }
+        #endif
+
         #pragma omp parallel for \
         firstprivate(f,min_steps,skip,flat_threshold,h,E_min,E_max,top_b,it_count_g) \
         private(b_new,b,ln_f)  \
@@ -293,6 +304,9 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
         int seed = 1 + rand() % 10000;
         CRandomMersenne Mersenne(seed);
         Mersenne.RandomInit(seed);
+
+        double part_of_iteration_time_begin = 0.0, part_of_iteration_time_end = 0.0;
+        double time_of_iteration_begin = 0.0, time_of_iteration_end = 0.0;
 
         int mcs;
         int count, n;
@@ -357,6 +371,10 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
         //         // massive[pp_i].hist[i] = massive[0].hist[i];
         //     // }
         // }
+
+        // #ifdef FULL_ITERATION_TIME_OUT
+        part_of_iteration_time_begin = omp_get_wtime();
+        // #endif
 
         // #pragma omp flush(massive)
         for (int i = 0; i < top_b; i++)   {
@@ -861,13 +879,21 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
                 std::cout << std::setprecision(8) << "f=" << f << ", ln_f=" << ln_f << ", flat_threshold = " << flat_threshold << ", h_delt = " << h_delt << ", count = " << count << ", PP = " << pp_i << std::endl;
             #endif
 
+            time_of_iteration_end = omp_get_wtime();
+            part_of_iteration_time_end = omp_get_wtime();
+
             #ifdef COUT_EVERY_NUM_STEPS
-                std::cout << "L = " << L << ": f = " << f << ", ln_f = " << ln_f << "; PP = " << PP_I << "; thread = " << pp_i << ": mcs = " << mcs << std::endl; 
+            {
+                if(time_of_iteration_begin != 0)
+                std::cout << "L = " << L << ": f = " << f << ", ln_f = " << ln_f << "; PP = " << PP_I << "; thread = " << pp_i << ": mcs = " << mcs << ": [Time: " << part_of_iteration_time_end - part_of_iteration_time_begin << "'s ]"<< ": [It: " << time_of_iteration_end - time_of_iteration_begin << "'s ]" << std::endl; 
+                else
+                std::cout << "L = " << L << ": f = " << f << ", ln_f = " << ln_f << "; PP = " << PP_I << "; thread = " << pp_i << ": mcs = " << mcs << ": [Time: " << part_of_iteration_time_end - part_of_iteration_time_begin << "'s ]"<< ": [It: calibration... ]" << std::endl; 
+            }
             #endif
 
+            time_of_iteration_begin = omp_get_wtime();
+
             }
-            // Убрать, если все будет хорошо считаться
-            // if(mcs > 100000) goto m2;
         
         }   else count = 1;
 
@@ -1553,6 +1579,16 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
         #pragma omp barrier
         
         #pragma omp flush(massive)
+
+        #ifdef FULL_ITERATION_TIME_OUT
+        {
+
+        f_iteration_time_end = omp_get_wtime();
+
+        std::cout << "Full Iteration Time: " << f_iteration_time_end - f_iteration_time_begin << "'s\n\n";
+
+        }
+        #endif
 
         f = pow(f, 0.5);    // Изменяем множитель
 
