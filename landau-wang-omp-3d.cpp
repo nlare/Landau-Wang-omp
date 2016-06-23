@@ -29,11 +29,12 @@
 // #define CHECK_H_DELT
 // #define HIST_FLAT_OUT
 #define COUT_EVERY_NUM_STEPS
-// #define REPLICAEXHANGE 
+#define REPLICAEXHANGE 
 #define energy(b) (2*(b)-2.0*(L*L*L))
 // #define PP_I 2
 // #define L 8
-#define DISABLE_FLAT_CRITERIA
+#define DISABLE_NEW_FLAT_CRITERIA
+// #define DISABLE_OLD_FLAT_CRITERIA
 #define FULL_ITERATION_TIME_OUT
 // #define MAX_MCS_COUNT 100000
 
@@ -111,7 +112,7 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
     f_min = 1.000001;  // Данная переменная должна быть около единицы
     min_steps = 10000;
     skip = 10000;
-    flat_threshold = 0.8;
+    flat_threshold = 0.7;
     // overlap = 0.75;
     overlap = 0.95;
     h = 1;
@@ -312,6 +313,10 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
         int count, n;
         int c = skip+1;
         double prob;    // Вероятность изменения энергетического уровня
+
+        int exchange_count = 0;
+
+        // for(int i = 0; i < PP_I; i++) exchange_count[pp_i] = 0;
 
         // int L_C = L*overlap;
 
@@ -545,38 +550,15 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
         }
 
-        // m3:
-
         mcs++;
         c++;
 
-        // #pragma omp critical
-        // {
-        //     std::cout << "mcs[" << pp_i << "]:" << mcs << std::endl;
-        // }
-
         #pragma omp flush(massive, E_min, E_max)
-        // if(mcs == 5000 && pp_i == 0 && ln_f == 1)    {
-        //     std::cout << "in cycle!\n";
-        //     for(int i = E_min[pp_i]; i < E_max[pp_i]; i++)  {
-
-        //         massive[pp_i+1].hist[i] = massive[pp_i].hist[i];
-
-        //     }
-
-        // }
         
         if((mcs >= min_steps) && (c >= skip))    {
 
-            // int diff_between_g;
-            
             c = 0;
 
-        // #pragma omp critical
-        // {
-        //     std::cout << "flat_threshold = " << flat_threshold << std::endl; 
-        // }
-        
             #ifdef DEBUG
             // std::cout << "In count area. \n";
             // std::cout << "mcs = " << mcs << std::endl;
@@ -627,25 +609,6 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
             }
 
-            // std::cout << "overlap_interval_begin = " << overlap_interval_begin << "; overlap_interval_end = " << overlap_interval_end << std::endl;
-
-            // #pragma omp flush(E_min)
-            // diff_between_g = E_min[pp_i] - E_min[num_of_exchange_replica];
-            // std::cout << "dbg = " << diff_between_g << std::endl;
-
-            // overlap_interval_begin -= 2; 
-            // overlap_interval_end -= 1; 
-
-            // #ifdef DEBUG
-            // if(pp_i == 1)   {
-                // std::cout << pp_i << ":overlap_interval_begin=" << overlap_interval_begin << std::endl;
-                // std::cout << pp_i << ":overlap_interval_end=" << overlap_interval_end << std::endl;
-            // }
-            // #endif
-
-            // prob = 0.01;
-            // count = 0;
-
             #pragma omp flush(E_min, E_max)
 
             // int first_not_null_g_for_pp_i, first_not_null_g_for_exchange_replica; 
@@ -691,25 +654,20 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
                     random_index_y = random_index_x;
 
-                    if((random_index_x > overlap_interval_begin+2) && (random_index_x < overlap_interval_end)\
-                        && (random_index_y > overlap_interval_begin+2) && (random_index_y < overlap_interval_end))    {
+                    if((random_index_x > overlap_interval_begin+4) && (random_index_x < overlap_interval_end)\
+                        && (random_index_y > overlap_interval_begin+4) && (random_index_y < overlap_interval_end))    {
 
                         // if(massive[pp_i].hist[random_index_x]!=0 && massive[pp_i].hist[random_index_x]!=0 \
                             // && massive[num_of_exchange_replica].hist[random_index_y]!=0 && massive[num_of_exchange_replica].hist[random_index_y]!=0)
                         #pragma omp flush(random_index_x,random_index_y)
-                        // {
-                            prob = (massive[pp_i].g[random_index_x]*massive[num_of_exchange_replica].g[random_index_y])/ \
+                        
+                        prob = (massive[pp_i].g[random_index_x]*massive[num_of_exchange_replica].g[random_index_y])/ \
                                    (massive[pp_i].g[random_index_y]*massive[num_of_exchange_replica].g[random_index_x]);
 
 
                         if(prob >= 1.0 || (double)(Mersenne.IRandom(1,10000)/10000.0) < prob) { //&& (fabs(massive[pp_i].g[random_index_y] - massive[num_of_exchange_replica].g[random_index_y])) < 100.0) {
 
                             // ---------------- EXHANGE BETWEEN SOME RANDOM INDEXES OF G[i] -----------------------
-
-                            // if(abs(massive[pp_i].g[random_index_x] - massive[num_of_exchange_replica].g[random_index_y]) < 100.0)    {
-                                
-                                // std::cout << "init exchange between THREAD #" << pp_i << " and #" << num_of_exchange_replica << " : " << random_index_x << "[" << massive[pp_i].g[random_index_x] << "]" << " <-> " << random_index_y << "[" << massive[num_of_exchange_replica].g[random_index_y] << "]" << std::endl;
-                                // #pragma omp flush(massive,buffer,random_index_x,random_index_y,ln_f)
 
                                 double buffer = massive[pp_i].g[random_index_x];
                                 massive[pp_i].g[random_index_x] = massive[num_of_exchange_replica].g[random_index_x];
@@ -718,8 +676,6 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
                                 buffer = massive[pp_i].g[random_index_y];
                                 massive[pp_i].g[random_index_y] = massive[num_of_exchange_replica].g[random_index_y];
                                 massive[num_of_exchange_replica].g[random_index_y] = buffer;
-
-                                // if()
 
                                 massive[pp_i].g[random_index_x] += ln_f;
                                 massive[pp_i].hist[random_index_x] += 1;                                
@@ -732,7 +688,11 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
                                 massive[num_of_exchange_replica].g[random_index_y] += ln_f;
                                 massive[num_of_exchange_replica].hist[random_index_y] += 1;
-        
+
+                                exchange_count++;
+
+                                // std::cout << "Exchange between: " << pp_i << " and " <<  << std::endl;
+                        
                         }   
                         
                     }
@@ -743,8 +703,27 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
                 }
             }
-
             #endif
+
+            int count_no_flat[PP_I];
+            float no_flat_averaged_var[PP_I];
+
+            // #pragma omp critical
+            {
+
+            #ifndef DISABLE_OLD_FLAT_CRITERIA
+            {
+
+            // if(MAX_MCS_COUNT == 0)
+            {
+
+            #pragma omp flush(massive)
+
+
+            for(int i = 0; i < PP_I; i++)   {
+                no_flat_averaged_var[i] = 0;
+                count_no_flat[i] = 0;
+            }
 
             int h_count = 0;
             double h_delt = 0.0;
@@ -752,52 +731,71 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
             h_delt = 0.0;
 
-            // #pragma omp critical
-
-            // #pragma omp critical
-            {
-
             // Старый вариант проверки на плоскость гистограммы
             // ---------------------------------
-            // for(int i = E_min[pp_i]; i < E_max[pp_i]; i++) {
+            for(int i = E_min[pp_i]; i < E_max[pp_i]; i++) {
 
-            //     // if(massive[pp_i].hist[i] != 0)    {
-            //     if(i%2 == 0)    {
+                if((i > (E_min[pp_i])) && (i%2 == 0))    {
 
-            //         h_sum += (double)massive[pp_i].hist[i]/min_steps;
-            //         h_count++;
+                    h_sum += (double)massive[pp_i].hist[i]/min_steps;
+                    h_count++;
 
-            //     }
+                }
 
-            // }
+            }
 
-            // // #pragma omp flush
-            // count = 0;  // Выходим из цикла по окончанию
+            count = 0;  // Выходим из цикла по окончанию
 
-            // for (int i = E_min[pp_i]; i < E_max[pp_i]; i++)    {
-            //     if(massive[pp_i].hist[i] != 0)    {
-            //         h_delt = (massive[pp_i].hist[i]/(h_sum/h_count))/min_steps;
-            //         if((h_delt < flat_threshold) || (h_delt > 1+flat_threshold)) count =1;
-            //         // else count = 0;
+            for (int i = E_min[pp_i]; i < E_max[pp_i]; i++)    {
+                if((i > (E_min[pp_i])) && (i%2 == 0))    {
 
-            //         // if(h_delt < flat_threshold) {
-            //         //     std::cout << std::endl << "---------------------------" << std::endl;
-            //         //     std::cout << i << ":" << h_delt << std::endl;
-            //         //     std::cout << "---------------------------" << std::endl;
-            //         // }
+                    h_delt = (massive[pp_i].hist[i]/(h_sum/h_count))/min_steps;
+                    if(((h_delt > 0) && (h_delt <= flat_threshold)) || (h_delt >= 1+flat_threshold)) 
+                    {
+                        count = 1;
 
-            //         // else goto m2;
-            //     //     if((massive[pp_i].g[i] < E_max[pp_i]) && (massive[pp_i].g[i] > E_max[pp_i]-4 ) ) {
-            //     //     std::cout << i << ":" << h_delt << std::endl;
-            //     // }
-            //     }
-            // }
+                        // if(omp_get_thread_num() == 0)   {
+
+                        //     #pragma omp critical
+                        //     std::cout << i << ":" << h_delt << ": " << flat_threshold << std::endl;
+
+                        // }
+
+                        count_no_flat[pp_i]++;
+                        no_flat_averaged_var[pp_i] += h_delt;
+
+                    }
+
+                    // if(h_delt < flat_threshold) {
+                    //     std::cout << std::endl << "---------------------------" << std::endl;
+                    //     std::cout << i << ":" << h_delt << std::endl;
+                    //     std::cout << "---------------------------" << std::endl;
+                    // }
+
+                    // else goto m2;
+                //     if((massive[pp_i].g[i] < E_max[pp_i]) && (massive[pp_i].g[i] > E_max[pp_i]-4 ) ) {
+
+                // }
+                }
+            }
+
+            if(count_no_flat[pp_i]!=0)  no_flat_averaged_var[pp_i] /= count_no_flat[pp_i];
+            else no_flat_averaged_var[pp_i] = 0;
+
+            if(count_no_flat[pp_i] < L) count = 0;
+
+            if(mcs == MAX_MCS_COUNT) count = 0;
+
+            }
+
+            }
+            #endif
 
             // ---------------------------------
 
             // Новый вариант проверки на плоскость гистограммы основанный на среднеквадратичном отклонении
             // ---------------------------------
-            #ifndef DISABLE_FLAT_CRITERIA
+            #ifndef DISABLE_NEW_FLAT_CRITERIA
             {
                 #pragma omp flush(massive)
 
@@ -859,7 +857,7 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
             }
             #endif
 
-                if(mcs >= MAX_MCS_COUNT) count = 0;
+                // if(mcs >= MAX_MCS_COUNT) count = 0;
                 // else count = 1;
                 #ifdef HIST_FLAT_OUT
                 std::cout << "hist2av = " << hist2av << "; histav2 = " << histav2 << "; hi_count = " << hi_count << "; delta = " << delta << std::endl;
@@ -884,16 +882,30 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
             #ifdef COUT_EVERY_NUM_STEPS
             {
-                if(time_of_iteration_begin != 0)
-                std::cout << "L = " << L << ": f = " << f << ", ln_f = " << ln_f << "; PP = " << PP_I << "; thread = " << pp_i << ": mcs = " << mcs << ": [Time: " << part_of_iteration_time_end - part_of_iteration_time_begin << "'s ]"<< ": [It: " << time_of_iteration_end - time_of_iteration_begin << "'s ]" << std::endl; 
+                std::cout << std::setprecision(8);
+
+                if(time_of_iteration_begin != 0)    
+                std::cout << "L = " << L << ": f = " << f << ", ln_f = " \
+                          << ln_f << "; PP = " << PP_I << "; thread = " \
+                          << pp_i << ": mcs = " << mcs << std::setprecision(4) << ": [Time: " \
+                          << part_of_iteration_time_end - part_of_iteration_time_begin \
+                          << "'s ]" << ": [It: " << time_of_iteration_end - time_of_iteration_begin \
+                          << "'s ]" << "[ AV: "  << no_flat_averaged_var[pp_i] << "]:\t" \
+                          << "[ CNF: " << count_no_flat[pp_i] << " ]" << "[EX: " << exchange_count << "]" << std::endl;
                 else
-                std::cout << "L = " << L << ": f = " << f << ", ln_f = " << ln_f << "; PP = " << PP_I << "; thread = " << pp_i << ": mcs = " << mcs << ": [Time: " << part_of_iteration_time_end - part_of_iteration_time_begin << "'s ]"<< ": [It: calibration... ]" << std::endl; 
+                std::cout << "L = " << L << ": f = " << f << ", ln_f = " \
+                          << ln_f << "; PP = " << PP_I << "; thread = " \
+                          << pp_i << ": mcs = " << mcs << std::setprecision(4) << ": [Time: " \
+                          << part_of_iteration_time_end - part_of_iteration_time_begin \
+                          << "'s ]"<< ": [It: calibration... ]" << std::endl;
             }
             #endif
 
             time_of_iteration_begin = omp_get_wtime();
 
             }
+
+            for(int i = 0; i <= top_b; i++) massive[pp_i].hist[i] = 0;
         
         }   else count = 1;
 
@@ -1030,9 +1042,6 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
             hist_averaged[i] = 0.0;
         }
 
-        // std::cout << "TEST2!\n";
-
-        // std::cout << "overlap_interval_begin = " << overlap_interval_begin << "; overlap_interval_end = " << overlap_interval_end << std::endl;
         #pragma omp flush(massive, E_min, E_max)
 
         for(int i = 0; i < top_b; i++)  {
@@ -1044,7 +1053,7 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
             max_in_pp_i = 0;   
             for(int rank = 0; rank < PP_I; rank++)  {
                  // if(massive[pp_i].hist[i]!=0) 
-                 if(i%2 == 0 || i == 0)  
+                 if((i%2 == 0) || (i == 0))  
                  {
                     // -------------- CHOOSE MAX G[E] IN ALL REPLICAS -----------------
                     // if(massive[pp_i].g[i] > max_in_pp_i)   {    
@@ -1066,6 +1075,7 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
                      * Only for L = 8
                      * 
                      */
+
                     if(PP_I == 2)   {
                         
                         if((i > E_min[rank]+4) && (i < E_max[rank]))    {
@@ -1471,7 +1481,7 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
         for(int i = 0; i < top_b; i++)     {
 
-            if(i%2 == 0 || i == 0)  {
+            if((i%2 == 0) || (i == 0))  {
 
                 count++;
                 g_averaged[i]/=div_averaging[i];
@@ -1521,7 +1531,7 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
         for(int i = 0; i < top_b; i++)  {
             // if((i!=2*top_b-1) && (hist_averaged[i] != 0))    {
-            if(((i!=2*top_b-1) && (i%2 == 0)) || i == 0)    {
+            if(((i!=2*top_b-1) && (i%2 == 0)) || (i == 0))    {
                 test_g_f << std::fixed << std::setprecision(6) << i << "\t" << energy(i) << "\t" << g_averaged[i] << "\n";
                 // std::cout << "massive.g[" << i << "]=" << massive[pp_i].g[i] << std::endl;
             }
@@ -1605,7 +1615,7 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
     for(int i = 0; i < top_b; i++)  {
         // if(hist_averaged[i]!=0)  {
-        if(i%2 == 0 && i > 4 && g_averaged[i] != 1.0)  {
+        if((i%2 == 0) && (i > 4) && (g_averaged[i] != 1.0))  {
             if(g_averaged[i] < min_in_ge)
             min_in_ge = g_averaged[i];
         }
@@ -1683,11 +1693,11 @@ int LW3D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
 
     for(int i = 0; i <= top_b; i++)  {
         
-        if(i%2 == 0 && i > 4)   {
+        if((i%2 == 0) && (i > 4))   {
             g_normalized[i] = g_averaged[i] - min_in_ge;
         }
 
-            if(i%2 == 0 && i > 4)   {
+            if((i%2 == 0) && (i > 4))   {
             std::cout << std::fixed << "g[" << i << "]=" << g_averaged[i] \
                       << ":\t" << massive[0].g[i] << "\t" << massive[1].g[i] << "\t" \
                       << g_normalized[i] << std::endl;

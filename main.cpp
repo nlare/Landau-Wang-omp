@@ -79,7 +79,7 @@ int main(int argc, char *argv[])    {
 
     if(DIM == 3)    {
      
-        if(L != 0 && PP_I >= 2 && ((PP_I % 2) == 0) && MAX_MCS_COUNT > 10000)    {
+        if(L != 0 && PP_I >= 2 && ((PP_I % 2) == 0) && (MAX_MCS_COUNT > 10000 || MAX_MCS_COUNT == 0))    {
 
             LW3D(L, PP_I, MAX_MCS_COUNT);
 
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])    {
 
     if(DIM == 2)    {
 
-        if(L != 0 && PP_I >= 2 && ((PP_I % 2) == 0) && MAX_MCS_COUNT > 10000)    {
+        if(L != 0 && PP_I >= 2 && ((PP_I % 2) == 0) && (MAX_MCS_COUNT > 10000 || MAX_MCS_COUNT == 0))    {
 
             LW2D(L, PP_I, MAX_MCS_COUNT);
 

@@ -110,7 +110,7 @@ int LW2D(int _L, int _PP_I, int _MAX_MCS_COUNT)  {
     f_min = 1.000001;  // Данная переменная должна быть около единицы
     min_steps = 10000;
     skip = 10000;
-    flat_threshold = 0.8;
+    flat_threshold = 0.7;
     // overlap = 0.75;
     overlap = 0.95;
     h = 1;

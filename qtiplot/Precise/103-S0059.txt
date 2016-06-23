@@ -1,0 +1,1051 @@
+International Journal of Machine Learning and Computing, Vol. 2, No. 2, April 2012
+
+Evaluation of an Efficient Monte Carlo Algorithm to
+Calculate the Density of States
+Seung-Yeon Kim, Member, IACSIT
+function zeros indicating most effectively phase transitions
+and critical phenomena, and to perform microcanonical
+analysis of phase transitions and critical phenomena, we need
+to calculate the density of states. Currently, Wang-Landau
+Monte Carlo algorithm [3] is one of the most efficient Monte
+Carlo methods to calculate the approximate density of states.
+In Wang-Landau Monte Carlo algorithm, the inverse of the
+density of states is employed as the sampling probability
+function, and the real values for the density of states can be
+obtained quickly due to its modification factor.
+Phase transitions and critical phenomena can also be
+understood based on the concept of partition function zeros.
+Fisher introduced the partition function zeros in the complex
+temperature plane utilizing the Onsager solution of the
+square-lattice Ising model in the absence of an external
+magnetic field [4]. Fisher also showed that the partition
+function zeros in the complex temperature plane of the
+square-lattice Ising model determine its ferromagnetic and
+antiferromagnetic critical temperatures at the same time in
+the absence an external magnetic field. By calculating the
+partition function zeros and examining the behavior of the
+first partition function zero (partition function zero closest to
+the positive real axis) in the thermodynamic limit, phase
+transitions and critical phenomena can be much more
+accurately analyzed than examining the behavior of the
+specific heat per volume for real values of the temperature,
+which is plagued by the noise due to the subleading terms
+containing zeros other than the first ones [5−20].
+In the next section, the density of states and the partition
+function of the square-lattice Ising model are defined. In
+Section III, Wang-Landau Monte Carlo algorithm to
+calculate the approximate density of states is briefly
+explained. In Section IV, the concept of the partition function
+zeros in the complex temperature plane is introduced, the
+partition function zeros of the square-lattice Ising model are
+evaluated in the complex temperature plane using the exact
+density of states and the approximate density of states, and
+both results are compared.
+
+Abstract—Phase transitions and critical phenomena are the
+most universal phenomena in nature. To understand the phase
+transitions and critical phenomena of a given system as a
+continuous function of temperature and to obtain the partition
+function zeros in the complex temperature plane indicating
+most effectively phase transitions and critical phenomena, we
+need to calculate the density of states. Currently, Wang-Landau
+Monte Carlo algorithm is one of the most efficient Monte Carlo
+methods to calculate the approximate density of states. Using
+Wang-Landau Monte Carlo algorithm, the density of states for
+the Ising model on L x L square lattices (L = 4 ~ 32) with periodic
+boundary conditions is obtained, and the partition function
+zeros of the Ising model are evaluated in the complex
+temperature plane. By examining the behavior of the first
+partition function zero (partition function zero closest to the
+positive real axis), phase transitions and critical phenomena can
+be much more accurately analyzed. The approximate first zeros
+of the Ising ferromagnet, obtained from Wang-Landau
+algorithm, are quite close to the exact ones, indicating that it is a
+reliable method for calculating the density of states and the first
+partition function zeros.
+Index Terms—Phase transition, density of states, Ising model,
+partition function zeros.
+
+I. INTRODUCTION
+Phase transitions and critical phenomena are the most
+universal phenomena in nature. The two-dimensional Ising
+model is the simplest system showing phase transitions and
+critical phenomena at finite temperatures. Since the Onsager
+(Nobel prize winner in 1968) solution [1] of the square-lattice
+Ising model with periodic boundary conditions in the absence
+an external magnetic field, the two-dimensional Ising model
+has played a central role in our understanding of phase
+transitions and critical phenomena [2].
+To understand phase transitions and critical phenomena,
+various theoretical methods (such as mean-field theory,
+power-series expansion and analysis, renormalization group,
+and transfer matrix) have been developed. Recently,
+computer simulations, in particular, Monte Carlo computer
+simulations have been the most popular method in studying
+phase transitions and critical phenomena. To understand the
+phase transition and critical phenomena of a given system as
+a continuous function of temperature, to obtain the partition
+
+II. EXACT DENSITY OF STATES
+The Ising model [1, 2] on a lattice with Ns sites and Nb
+bonds is defined by the Hamiltonian
+H = −J
+
+Manuscript received March 19, 2012; revised April 3, 2012. This research
+was supported by Basic Science Research Program through the National
+Research Foundation of Korea (NRF) funded by the Ministry of Education,
+Science and Technology (grant number 2011-0014994).
+Seung-Yeon Kim is with the School of Liberal Arts and Sciences, Korea
+National University of Transportation, Chungju 380-702, South Korea
+(e-mail: sykimm@ut.ac.kr).
+
+∑σσ
+i
+
+j
+
+,
+
+(1)
+
+<i, j >
+
+where J is the coupling constant between two neighboring
+magnetic spins (positive value of J for a ferromagnetic
+interaction and negative value of J for an antiferromagnetic
+144
+
+International Journal of Machine Learning and Computing, Vol. 2, No. 2, April 2012
+
+interaction),
+
+< i , j > indicates a sum over all
+nearest-neighbor pairs (i and j) of lattice sites, and σ i = ± 1
+
+due to the symmetry of the square-lattice Ising model. Table I
+shows the exact integer values for the density of states of the
+Ising model on the 8 × 8 square lattice with periodic
+boundary conditions, obtained from the Onsager solution [1].
+
+(positive value for the upward magnetic spin on a lattice site i
+and negative value for the downward magnetic spin). For the
+Ising model on L × L square lattice with periodic boundary
+conditions, the number of spins is N s = L2 and the number
+of bonds is N b = 2 L2 . If we define the density of states,
+
+TABLE I: EXACT INTEGER VALUES FOR THE DENSITY OF STATES
+
+where E is a positive integer ( 0 ≤ E ≤ N b ), the Hamiltonian
+can be written as
+(3)
+
+for the square-lattice Ising model.
+Finally, the partition function of the square-lattice Ising
+2
+
+L
+model (a sum 2 over possible spin configurations)
+
+Z =
+
+∑ exp( − β H ),
+
+(4)
+
+{σ n }
+
+where β = 1 / k B T , kB is the Boltzmann constant, and T is
+temperature, is expressed as
+2 L2
+
+Z ( y ) = exp(2 β JL2 ) ∑ Ω ( E ) y E ,
+
+(5)
+
+E =0
+
+where y = exp( − 2 β J ) . For a ferromagnetic interaction, the
+physical interval is 0 ≤ y ≤ 1 ( 0 ≤ T ≤ ∞ ). That is, y is a
+convenient temperature variable, confined to a short interval
+[0, 1]. Given the density of states Ω ( E ) , the partition
+function is a polynomial in y. Naturally, we obtain the
+entropy as a function of energy according to the Boltzmann
+formula
+
+shown in the table, we notice that
+Ω(E ) = 0
+
+from the density of states. Therefore, the partition function of
+the square-lattice Ising model can be written as
+2L
+
+(9)
+
+for E = odd numbers. It is a general result for periodic
+boundary conditions, independent of the system size L. For
+other kinds of boundary conditions, we obtain non-zero
+values for the density of states even in the case of E = odd
+numbers. Also, we have
+
+2
+
+Z ( y ) = exp(2 β JL2 ) ∑ exp[ S ( E ) / k B ] y E .
+
+2
+128
+256
+4672
+17920
+145408
+712960
+4274576
+22128384
+118551552
+610683392
+3150447680
+16043381504
+80748258688
+396915938304
+1887270677624
+8582140066816
+36967268348032
+149536933509376
+564033837424064
+1971511029384704
+6350698012553216
+18752030727310592
+50483110303426544
+123229776338119424
+271209458049836032
+535138987032308224
+941564975390477248
+1469940812209435392
+2027486077172296064
+2462494093546483712
+2627978003957146636
+
+The values of the density of states for 66 ≤ E ≤ 128 are
+easily obtained using the relation Ω ( E ) = Ω (2 L2 − E ) . As
+
+(6)
+
+S ( E ) = k B ln Ω ( E )
+
+Ω(E )
+
+E
+0
+4
+6
+8
+10
+12
+14
+16
+18
+20
+22
+24
+26
+28
+30
+32
+34
+36
+38
+40
+42
+44
+46
+48
+50
+52
+54
+56
+58
+60
+62
+64
+
+(2)
+
+H = 2 J ( E − L2 )
+
+Ω(E )
+
+OF THE ISING MODEL ON THE 8 X 8 SQUARE LATTICE WITH PERIODIC
+BOUNDARY CONDITIONS, AS A FUNCTION OF ENERGY E (= 0 ~ 64)
+
+Ω ( E ) , with a given energy
+
+1
+E = ∑ (1 − σ iσ j ),
+2 <i , j >
+
+(8)
+
+Ω ( E ) = Ω (2 L2 − E )
+
+(7)
+
+E =0
+
+The states with E = 0 are the ferromagnetic ground states
+(where all spins align in the same direction), whereas the
+states with E = 2 L2 correspond to the antiferromagnetic
+ground states (where all nearest-neighbor spins of any spin
+on the lattice are oppositely oriented to it). Also, the density
+of states satisfies the following relation
+
+2 L2
+
+∑ Ω(E ) = 2
+E =0
+
+for L = 8.
+
+145
+
+L2
+
+= 18446744073709551616
+
+(10)
+
+International Journal of Machine Learning and Computing, Vol. 2, No. 2, April 2012
+TABLE II: APPROXIMATE VALUES FOR THE DENSITY OF STATES
+
+Ω(E )
+
+III. APPROXIMATE DENSITY OF STATES
+
+OF
+
+THE ISING MODEL ON THE 8 X 8 SQUARE LATTICE WITH PERIODIC
+BOUNDARY CONDITIONS, AS A FUNCTION OF ENERGY E, OBTAINED FROM
+WANG-LANDAU MONTE CARLO ALGORITHM
+
+E
+
+Ω(E )
+
+0
+4
+6
+8
+10
+12
+14
+16
+18
+20
+22
+24
+26
+28
+30
+32
+34
+36
+38
+40
+42
+44
+46
+48
+50
+52
+54
+56
+58
+60
+62
+64
+66
+68
+70
+72
+74
+76
+78
+80
+82
+84
+86
+88
+90
+92
+94
+96
+98
+100
+102
+104
+106
+108
+110
+112
+114
+116
+118
+120
+122
+124
+128
+
+2.0
+127.4
+255.1
+4656.6
+17893.1
+144522.0
+711580.2
+4246933.2
+21930324.7
+117959662.0
+607864844.6
+3141196764.1
+16031280614.1
+80763014316.9
+397547867401.4
+1896126034244.0
+8616391282913.0
+37010388229450.7
+149497396152612.3
+564138451122736.3
+1974546436062731.0
+6361612074395794.0
+18848286897649970.0
+50748192131679070.0
+124052697782181100.0
+272702357160341300.0
+538833615118266100.0
+950195978440535000.0
+1482917293139119000.0
+2044706519336103000.0
+2480176354118822000.0
+2647205100816658000.0
+2481685597611912000.0
+2045217128048957000.0
+1482774804531565000.0
+950073686197236000.0
+539916556625655100.0
+273497776072990000.0
+124382702728906700.0
+50914788916632710.0
+18903473835185660.0
+6425496048611473.0
+1997172631232223.0
+570664400401192.8
+151012039783018.9
+37342836397764.3
+8650942216058.1
+1896807076900.0
+398414563513.1
+81043609427.3
+16130155148.4
+3167278999.3
+613397094.4
+118983233.4
+22149806.8
+4274929.4
+714107.5
+145441.5
+17815.8
+4648.6
+253.1
+127.1
+2.0
+
+One of the most important methods in studying phase
+transitions and critical phenomena is computer simulation, in
+particular, Monte Carlo computer simulation. The
+importance sampling Monte Carlo method, Metropolis Mote
+Carlo algorithm [21], has been used extensively in science
+and engineering. In Metropolis Mote Carlo algorithm, the
+natural canonical distribution function,
+exp( − β H ),
+
+(11)
+
+where H is the Hamiltonian of a given system, is employed as
+the sampling probability function at a given temperature T.
+The canonical distribution function can be written as
+Ω ( E ) exp( − β E ),
+
+(12)
+
+as a function of energy E, where Ω ( E ) is the density of
+states and exp( − β E ) is the Boltzmann-Gibbs factor. As
+energy E increases, the density of states increases sharply and
+the Boltzmann-Gibbs factor decreases sharply. Therefore, the
+canonical distribution function is a needle-shaped function
+around ET, which becomes the delta function in the
+thermodynamic limit.
+Metropolis Mote Carlo algorithm is the most efficient
+method for understanding the properties of a given system at
+a fixed temperature. However, if we want to understand the
+phase transitions and critical phenomena of a given system as
+a continuous function of temperature, to obtain the partition
+function zeros in the complex temperature plane indicating
+most effectively phase transitions and critical phenomena,
+and to perform microcanonical analysis of phase transitions
+and critical phenomena, Metropolis Mote Carlo algorithm is
+not useful. To understand the transition properties of a given
+system as a continuous function of temperature, to obtain the
+partition function zeros, and to perform microcanonical
+analysis, we need to calculate the density of states. Currently,
+Wang-Landau Monte Carlo algorithm is one of the most
+efficient Monte Carlo methods to calculate the approximate
+density of states [3].
+In Wang-Landau Monte Carlo algorithm, the reciprocal of
+the density of states, 1 / Ω ( E ) , is also employed as the
+sampling probability function. That is, the transition
+probability from a state with energy E1 to another state with
+energy E2 is defined by
+p ( E1 → E 2 ) = min[ Ω ( E1 ) / Ω ( E 2 ),1],
+
+(13)
+
+where E1 and E2 are energies before and after a random spin
+flip. Because this definition means a random walk in energy
+space with a probability proportional to the reciprocal of the
+density of states, 1 / Ω ( E ) , a truly flat histogram for the
+energy distribution can be obtained after an infinite number
+of random Monte Carlo moves.
+The density of states is a priori unknown. Therefore, at the
+first time, we generate a crude version of the density of states,
+2
+6
+Ω 0 ( E ) , by accepting all L × 10 Monte Carlo steps. Now,
+
+146
+
+International Journal of Machine Learning and Computing, Vol. 2, No. 2, April 2012
+
+IV. PARTITION FUNCTION ZEROS
+
+the initial density of states Ω 0 ( E ) is employed as the
+sampling probability function, and then the density of states
+is changed after a Monte Carlo step. Each Monte Carlo step,
+the density of states is updated according to the following
+rule
+Ω ( E ) → f Ω ( E ),
+
+In the thermodynamic limit, the specific heat (per volume)
+of the square-lattice Ising ferromagnet becomes infinite at the
+critical temperature where the transition between the
+paramagnetic phase and the ferromagnetic phase emerges. In
+finite systems, the specific heat per volume shows a sharp
+peak but is not infinite. At the same time, the location (the
+so-called effective critical temperature) of the sharp peak of
+the specific heat in a finite system is different from the critical
+temperature at the inifinite system. As the system size
+increases, the effective critical temperature approaches the
+critical temperature.
+Given the density of states Ω ( E ) , the free energy (per
+volume) of the square-lattice Ising model is given by
+
+(14)
+
+where f ( > 1) is the modification factor [3]. Owing to this
+factor, an improved version of the density of states can be
+obtained quickly. At the first time, the modification factor is
+conveniently chosen as
+f 1 = e.
+
+(15)
+
+f ( y ) = − ( k B TL− 2 ) ln Z ( y )
+
+During a finite number of Monte Carlo steps with f1, the
+initial density of states Ω 0 ( E ) evolves into the new density
+
+2 L2
+
+= − ( k B TL− 2 )[2 β JL2 + ln ∑ Ω ( E ) y E ].
+E =0
+
+of states Ω 1 ( E ) . Next, the modification factor is reduced
+according to the following rule
+fi =
+
+f i −1 .
+
+Therefore, the specific heat (per volume) is expressed as
+(16)
+
+C ( y ) = ( k B T 2 L2 ) − 1
+
+Therefore, during a finite number of Monte Carlo steps with
+f 2 = exp(1 / 2),
+
+∂2
+ln Z ( y )
+∂β 2
+
+(20)
+
+= ( k B L−2 )(ln y ) 2 ( < E 2 > − < E > 2 ).
+
+(17)
+
+In the thermodynamic limit, the specific heat (per volume) of
+the square-lattice Ising ferromagnet diverges at the critical
+temperature
+
+the density of states Ω 1 ( E ) evolves into Ω 2 ( E ) . If we
+repeat these processes thirty times, we have the final
+modification factor
+f 30 = exp(2 −29 ) = 1.00000000186,
+
+(19)
+
+y c = exp( − 2 J / k B Tc ) =
+
+2 −1
+
+(21)
+
+= 0.4142135623730950.
+
+(18)
+
+The ordered ferromagnetic phase appears below yc, whereas
+the disordered paramagnetic phase appears above yc. The
+properties of the phase transition of the Ising model are
+completely equivalent to those of the gas-liquid phase
+transition for a simple system [22, 23].
+Phase transitions and critical phenomena can also be
+understood based on the concept of partition function zeros.
+Yang and Lee (Nobel prize winners in 1957) proposed a
+rigorous mechanism for the occurrence of phase transitions in
+the thermodynamic limit and yielded an insight into the
+unsolved problem of the ferromagnetic Ising model at
+arbitrary temperature (T) in an external magnetic field (B) by
+introducing the concept of the zeros of the partition function
+Z(T,B) in the complex magnetic-field plane [22]. They also
+formulated the celebrated circle theorem, which states that
+the partition function zeros of the Ising ferromagnet lie on the
+unit circle in the complex fugacity plane [23].
+Following Yang and Lee's idea, Fisher introduced the
+partition function zeros in the complex temperature plane
+utilizing the Onsager solution of the square-lattice Ising
+model in the absence of an external magnetic field [4]. Fisher
+also showed that the partition function zeros in the complex
+temperature plane of the square-lattice Ising model determine
+its ferromagnetic and antiferromagnetic critical temperatures
+at the same time for B = 0. In finite systems no zero cut the
+
+and reach an accurate version of density of states Ω 30 ( E ) ,
+quite close to the true density of states, for example, the exact
+integer values in Table I.
+Every L2 × 10 6 Monte Carlo steps, we check the flatness
+of the energy histogram distribution hi ( E ) . If the maximum
+histogram value is less than 1.2 times the average value of
+histogram < hi ( E ) > and the minimum histogram value is
+larger than 0.8 < hi ( E ) > (the so-called 20% flatness
+criterion), we reduce the modification factor from fi to fi+1,
+and reset the histogram to zero. If not, we repeat L2 × 10 6
+Monte Carlo steps again and again until the 20% flatness
+criterion is satisfied without changing the value of the
+modification factor.
+Table II shows the approximate values for the density of
+states of the Ising model on the 8 × 8 square lattice with
+periodic boundary conditions, obtained from Wang-Landau
+Monte Carlo algorithm. As shown in the table, the
+approximate values are quite close to the exact integer ones in
+Table I.
+
+147
+
+International Journal of Machine Learning and Computing, Vol. 2, No. 2, April 2012
+
+positive real axis in the complex temperature plane, but some
+zeros for a system showing a phase transition approach the
+positive real axis as the system size increases, determining
+the critical temperature and the related critical exponents in
+the thermodynamic limit.
+Since the properties of the partition function zeros of a
+given system provided the valuable information on its exact
+solution, the earlier studies on partition function zeros were
+mainly performed in the fields of mathematics and
+mathematical physics. Nowadays, the concept of partition
+function zeros is applied to all fields of science from
+elementary particle physics to protein folding, and they are
+used as one of the most effective methods to determine the
+critical temperatures and exponents [5−20].
+The partition function Z ( y ) of the square-lattice Ising
+model can be expressed as its zeros {yi} in the complex
+temperature (y) plane:
+2 L2
+
+2 L2
+
+Z ( y ) = exp(2 β JL ) ∑ Ω ( E ) y = A ∏ ( y − y i ),
+2
+
+E
+
+E =0
+
+Using the Onsager solution of the square-lattice Ising
+ferromagnet with periodic boundary conditions, we can
+obtain the exact partition function zeros of the square-lattice
+Ising model in the complex y plane. Among the partition
+function zeros, the first zero (y1) is most important because it
+determines the critical temperature and the critical exponents.
+Table III shows the exact first zeros y1(L) of the Ising
+ferromagnet on L x L square lattices (L = 4 ~ 32) with periodic
+boundary conditions. As shown in the table, as the system
+size L increases, the real part of the first zero Re[y1(L)]
+approaches the exact critical temperature yc = −1 + √2
+following the finite-size scaling law
+
+Also, the imaginary part of the first zero Im[y1(L)] decreases
+quickly following the similar finite-size scaling law
+
+i =1
+
+2 L2
+
+f ( y ) = − ( k B TL− 2 )[ln A + ∑ ln( y − y i )],
+
+However, it is impossible to calculate the partition
+function zeros by using popular Metropolis Monte Carlo
+computer simulations. That is why the concept of the
+partition function zeros has not been used popularly and
+extensively in science and engineering. Now, with new
+Wang-Landau Monte Carlo computer simulations, it is
+possible to calculate the partition function zeros. We have
+calculated the partition function zeros of the square-lattice
+Ising ferromagnet with periodic boundary conditions from
+the density of states Ω ( E ) , generated by Wang-Landau
+Monte Carlo computer simulations with the 20 % flatness
+criterion for histograms. We have used one core of a Linux
+PC with one Intel i7-2600K CPU for Wang-Landau Monte
+Carlo computer simulations. The CPU time for the Ising
+model on 10 x 10 square lattice is just 3 minutes and 19
+seconds. Also, the CPU time is 14 minutes and 8 seconds on
+20 x 20 square lattice, and 48 minutes and 26 seconds on 32 x
+32 square lattice. Therefore, Wang-Landau Monte Carlo
+algorithm is quite fast with a modern computer.
+
+(23)
+
+i =1
+
+and the specific heat by
+2
+⎡ y
+⎛ y ⎞ ⎤
+C ( y ) = ( k B L )(ln y ) ∑ ⎢
+−⎜
+⎟ ⎥.
+i =1 ⎢ y − y i
+⎝ y − y i ⎠ ⎥⎦
+⎣
+2
+
+2 L2
+
+(24)
+
+For a system with the phase transition at the critical
+temperature yc, the loci of the partition function zeros close in
+toward the real axis to intersect it in the thermodynamic limit,
+and the singularity of the specific heat (per volume) C(y)
+appears in this limit. It is clear from C(y) that the leading
+behavior of such a singularity is due to the pair of partition
+function zeros closest to the positive real axis, called the first
+zeros (y1). Therefore, by calculating the partition function
+zeros and examining the behavior of the first zero in the
+thermodynamic limit, the critical behavior can be much more
+accurately analyzed than examining the behavior of the
+specific heat per volume for real values of the temperature,
+which is plagued by the noise due to the subleading terms
+containing zeros other than the first ones.
+TABLE III: EXACT FIRST ZERO
+
+y1 ( L )
+
+TABLE IV: APPROXIMATE FIRST ZERO
+
+L
+4
+8
+12
+16
+20
+24
+28
+32
+
+OF THE ISING FERROMAGNET ON L
+
+y1(L)
+0.4444395319800772
+0.4313561367685625
+0.4261054598770712
+0.4233155229514006
+0.4215858813328893
+0.4204086628321746
+0.4195556551626489
+0.4189091317852369
+
++
++
++
++
++
++
++
++
+
+y1 ( L )
+
+OF THE ISING
+
+FERROMAGNET ON L X L SQUARE LATTICE (L = 4 ~ 32) WITH PERIODIC
+BOUNDARY CONDITIONS, OBTAINED FROM WANG-LANDAU MONTE CARLO
+ALGORITHM
+
+X L SQUARE LATTICE (L = 4 ~ 32) WITH PERIODIC BOUNDARY CONDITIONS
+
+L
+4
+8
+12
+16
+20
+24
+28
+32
+
+(26)
+
+Im[ y1 ( L )] ~ L− 1 .
+
+(22)
+
+where A is constant. In terms of the partition function zeros,
+the free energy is given by
+
+−2
+
+(25)
+
+Δ Re[ y1 ( L )] = Re[ y1 ( L )] − y c ~ L−1 .
+
+0.1872942080259974 i
+0.0893746869542861 i
+0.0589791409518722 i
+0.0440487351863922 i
+0.0351597456080490 i
+0.0292591011649791 i
+0.0250556995741284 i
+0.0219089496918388 i
+
+y1(L)
+0.4443746227827420
+0.4311015629498683
+0.4261963705955438
+0.4234407520086122
+0.4213463155523976
+0.4205150208576107
+0.4195652085874216
+0.4190968920648668
+
++
++
++
++
++
++
++
++
+
+0.1875279524143367 i
+0.0891428713930486 i
+0.0589390738277786 i
+0.0442294013769738 i
+0.0351986300295024 i
+0.0294455914640483 i
+0.0250443689758780 i
+0.0220230300146012 i
+
+Table IV shows the approximate first zeros y1(L) of the
+Ising ferromagnet on L x L square lattices (L = 4 ~ 32) with
+periodic boundary conditions, obtained from Wang-Landau
+Monte Carlo computer simulations. As shown in the table,
+the approximate first zeros are quite close to the exact ones in
+Table III.
+148
+
+International Journal of Machine Learning and Computing, Vol. 2, No. 2, April 2012
+TABLE V: ERRORS OF THE APPROXIMATE FIRST ZEROS FROM THE EXACT
+ONES FOR THE ISING FERROMAGNET ON L X L SQUARE LATTICE
+L
+4
+8
+12
+16
+20
+24
+28
+32
+
+Error (%) for
+Re[y1(L)]
+0.015
+0.059
+0.021
+0.030
+0.057
+0.025
+0.002
+0.045
+
+Error (%) for
+ΔRe[y1(L)]
+0.215
+1.485
+0.764
+1.376
+3.250
+1.717
+0.179
+3.999
+
+[9]
+
+Error (%) for
+Im[y1(L)]
+0.125
+0.259
+0.068
+0.410
+0.111
+0.637
+0.045
+0.521
+
+[10]
+[11]
+[12]
+[13]
+[14]
+
+Table V shows the errors (%) of the approximate first
+zeros from the exact ones. The second column of the table
+shows the error of the real part of the approximate first zero
+from the exact one, and the errors are less than 0.06%. The
+third column shows the error for the difference, as in (25),
+between the real part and the critical temperature, and the
+errors are less than 4.0%. The fourth column of Table V
+shows the error of the imaginary part of the approximate first
+zero from the exact one, and the errors are less than 0.64%.
+Overally, the errors are quite small, indicating that
+Wang-Landau Monte Carlo algorithm is a reliable method for
+calculating the density of states and the first partition
+function zeros.
+
+[15]
+[16]
+[17]
+[18]
+
+[19]
+[20]
+[21]
+
+REFERENCES
+[1]
+[2]
+[3]
+[4]
+[5]
+[6]
+[7]
+[8]
+
+L. Onsager, “Crystal statistics. I. A two-dimensional model with an
+order-disorder transition,” Physical Review, vol. 65, pp. 117-149, 1944.
+C. Domb, The Critical Point; London, U.K.: Taylor and Francis, 1996.
+F. Wang and D. P. Landau, “Multiple-range random walk algorithm to
+calculate the density of states,” Physical Review Letters, vol. 86, pp.
+2050-2053, 2001.
+M. E. Fisher, “The nature of critical points,” in Lectures in Theoretical
+Physics, vol. 7C, W. E. Brittin, Ed. Boulder, CO: University of
+Colorado Press, 1965, pp. 1-159.
+S.-Y. Kim and R. J. Creswick, “Yang-Lee zeros of the Q-state Potts
+model in the complex magnetic field plane,” Physical Review Letters,
+vol. 81, pp. 2000-2003, 1998.
+S.-Y. Kim, “Partition function zeros of the Q-state Potts model on the
+simple-cubic lattice,” Nuclear Physics B, vol. 637, pp. 409-426, 2002.
+S.-Y. Kim, “Density of the Fisher zeros for the three-state and
+four-state Potts models,” Physical Review E, vol. 70, article: 016110,
+pp. 1-5, 2004.
+S.-Y. Kim, “Yang-Lee zeros of the antiferromagnetic Ising model,”
+Physical Review Letters, vol. 93, article: 130604, pp. 1-4, 2004.
+
+[22]
+[23]
+
+S.-Y. Kim, “Fisher zeros of the Ising antiferromagnet in an arbitrary
+nonzero magnetic field plane,” Physical Review E, vol. 71, article:
+017102, pp. 1-4, 2005.
+S.-Y. Kim, “Density of Yang-Lee zeros and Yang-Lee edge singularity
+for the antiferromagnetic Ising model,” Nuclear Physics B, vol. 705, pp.
+504-520, 2005.
+S.-Y. Kim, “Honeycomb-lattice antiferromagnetic Ising model in a
+magnetic field,” Physics Letters A, vol. 358, pp. 245-250, 2006.
+S.-Y. Kim, “Density of Yang-Lee zeros for the Ising ferromagnet,”
+Physical Review E, vol. 74, article: 011119, pp. 1-7, 2006.
+M. E. Monroe and S.-Y. Kim, “Phase diagram and critical exponent ν
+for nearest-neighbor and next-nearest-neighbor interaction Ising
+model,” Physical Review E, vol. 76, article: 021123, pp. 1-5, 2007.
+S.-Y. Kim, C.-O. Hwang, and J. M. Kim, “Partition function zeros of
+the antiferromagnetic Ising model on triangular lattice in the complex
+temperature plane for nonzero magnetic field,” Nuclear Physics B, vol.
+805, pp. 441-450, 2008.
+S.-Y. Kim, “Partition function zeros of the square-lattice Ising model
+with nearest- and next-nearest-neighbor interactions,” Physical Review
+E, vol. 81, article: 031120, pp. 1-7, 2010.
+S.-Y. Kim, “Partition function zeros of the honeycomb-lattice Ising
+antiferromagnet in the complex magnetic-field plane,” Physical Review
+E, vol. 82, article: 041107, pp. 1-7, 2010.
+C.-O. Hwang and S.-Y. Kim, “Yang-Lee zeros of triangular Ising
+antiferromagnets,” Physica A, vol. 389, pp. 5650-5654, 2010.
+J. H. Lee, H. S. Song, J. M. Kim, and S.-Y. Kim, “Study of a
+square-lattice Ising superantiferromagnet using the Wang-Landau
+algorithm and partition function zeros,” Journal of Statistical
+Mechanics, vol. 10, article: P03020, pp. 1-9, 2010.
+J. H. Lee, S.-Y. Kim, and J. Lee, “Exact partition function zeros and the
+collapse transition of a two-dimensional lattice polymer,” Journal of
+Chemical Physics, vol. 133, article: 114106, pp. 1-6, 2010.
+J. H. Lee, S.-Y. Kim, and J. Lee, “Collapse transition of a square-lattice
+polymer with next nearest-neighbor interaction,” Journal of Chemical
+Physics, vol. 135, article: 204102, pp. 1-4, 2011.
+N. Metropolis, A. W. Rosenbluth, M. N. Rosenbluth, A. H. Teller, and
+E. Teller, “Equation of state calculations by fast computing machines,”
+Journal of Chemical Physics, vol. 21, pp. 1087-1092, 1953.
+C. N. Yang and T. D. Lee, “Statistical theory of equations of state and
+phase transitions. I. Theory of condensation,” Physical Review, vol. 87,
+pp. 404-409, 1952.
+T. D. Lee and C. N. Yang, “Statistical theory of equations of state and
+phase transitions. II. Lattice gas and Ising model,” Physical Review, vol.
+87, pp. 410-419, 1952.
+
+Seung-Yeon Kim received the B.Sc. and M.Sc. degrees in Physics from
+Yonsei University, Seoul, South Korea, in 1990 and 1992, respectively. He
+received the Ph.D. degree in Physics from University of South Carolina,
+Columbia, South Carolina, USA in 2000.
+Currently, he is an associate professor at Korea National University of
+Transportation. His research interests are mathematical physics,
+computational physics, computational chemistry, computational biology, and
+bioinformatics.
+
+149
+
+
